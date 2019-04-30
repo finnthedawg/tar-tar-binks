@@ -1,7 +1,7 @@
 # tar-tar-binks
 A Unix-based tar facility that handles file collisions within the tarball.
 
-## Build
+## Build (OSX/Linux)
 ```shell
 $ make all
 ```
