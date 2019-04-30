@@ -6,7 +6,6 @@ A Unix-based tar facility that handles file collisions within the tarball.
 $ make all
 ```
 
-<<<<<<< HEAD
 ### Acknowledgements
 -   Yet to add
 =======
