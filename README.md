@@ -1,14 +1,16 @@
 # tar-tar-binks
 A Unix-based tar facility that handles file collisions within the tarball.
 
-## Build (OSX/Linux)
+## Build
 ```shell
 $ make all
 ```
 
-### Acknowledgements
--   Yet to add
-=======
+## Clean
+```shell
+$ make clean
+```
+
 ## Run instructions
 ```
 >> tartar {-c | -a | -x | -m | -p | -o NUMBER} <archive-file> <file/directory list>
@@ -27,4 +29,3 @@ with NUMBERth occurrence of each file.** If option -o is not specified it will e
 `-m` print out the meta-data (owner, group, rights, type of file) for all files/directories that have been archived in <archive-file>.
 
 `-p` display the hierarchy(-ies) of the files and directories stored in the <archive-file>.
->>>>>>> 70affddc0cfedfe322a11cb8d3e7c7ae4eb69998
