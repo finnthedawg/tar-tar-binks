@@ -1,8 +1,7 @@
 # tar-tar-binks
 
-[![Codacy Badge](https://api.codacy.com/project/badge/Grade/9d97b9894ec94581bc93c0d03d8728bd)](https://app.codacy.com/app/samhunsadamant/tar-tar-binks?utm_source=github.com&utm_medium=referral&utm_content=finnthedawg/tar-tar-binks&utm_campaign=Badge_Grade_Dashboard)
 [![Build Status](https://travis-ci.org/SamSamhuns/tar-tar-binks.svg?branch=master)](https://travis-ci.org/SamSamhuns/tar-tar-binks)
-[![Codacy Badge](https://api.codacy.com/project/badge/Grade/ee5d8e0525334d948c35668c6aa24af3)](https://www.codacy.com/app/samhunsadamant/tar-tar-binks?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=finnthedawg/tar-tar-binks&amp;utm_campaign=Badge_Grade)
+[![Codacy Badge](https://api.codacy.com/project/badge/Grade/9d97b9894ec94581bc93c0d03d8728bd)](https://app.codacy.com/app/samhunsadamant/tar-tar-binks?utm_source=github.com&utm_medium=referral&utm_content=finnthedawg/tar-tar-binks&utm_campaign=Badge_Grade_Dashboard)
 
 A unix-based tar utility that flattens out the file hierarchy and creates a archived package that can be inspected and unarchived for later use.
 
