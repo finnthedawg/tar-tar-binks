@@ -1,4 +1,7 @@
 # tar-tar-binks
+
+[![Build Status](https://travis-ci.org/SamSamhuns/tar-tar-binks.svg?branch=master)](https://travis-ci.org/SamSamhuns/tar-tar-binks)
+
 A unix-based tar utility that flattens out the file hierarchy and creates a archived package that can be inspected and unarchived for later use.
 
 ## Build
