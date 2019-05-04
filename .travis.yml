@@ -1,0 +1,4 @@
+language: cpp
+sudo: false # only for faster builds
+compiler: g++
+script: make all
