@@ -36,3 +36,6 @@
 
 # Built executable file
 tartar
+
+# adtar .ad files
+*.ad
