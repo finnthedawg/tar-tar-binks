@@ -10,6 +10,11 @@
 #include <iostream>
 #include <fstream>
 #include "common.h"
+#include "extract.h"
+#include "append.h"
+#include "store.h"
+#include "meta.h"
+#include "hierarchy.h"
 
 /* function to check for valid inputs and store archiveName name in archiveName
     and input files/directory names in inputList string array, tartar flag in flag
