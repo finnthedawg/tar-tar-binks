@@ -1,5 +1,7 @@
 # tar-tar-binks
 
+[![Codacy Badge](https://api.codacy.com/project/badge/Grade/956289d5c77c4785836cac7e895bc60a)](https://www.codacy.com/app/samhunsadamant/tar-tar-binks?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=finnthedawg/tar-tar-binks&amp;utm_campaign=Badge_Grade)
+
 A unix-based tar utility that flattens out the file hierarchy and creates a archived package that can be inspected and unarchived for later use.
 
 ## Build
