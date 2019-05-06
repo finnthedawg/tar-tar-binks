@@ -45,3 +45,6 @@ clean-mac-fsys:
 
 clean-build:
 	rm -rf $(TARGET)
+
+clean-ad:
+	rm *.ad
