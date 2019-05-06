@@ -39,9 +39,9 @@ int main(int argc, char *argv[]) {
 
 	std::cout << "DEBUG TARTAR WILL NOW COMMENCE\n" \
 	          << archiveName <<" " << " "<< version << " Should have smth before" << std::endl;
-    // iterating through the inputList cector to print everything out
-	for(std::vector<std::string>::iterator it = inputList.begin(); it != inputList.end(); ++it) {
-		std::cout << *it;
+	// iterating through the inputList cector to print everything out
+	for(std::vector<int>::size_type i = 0; i != inputList.size(); i++) {
+		std::cout << "DEBUG" << inputList[i] << std::endl;
 	}
 
 
