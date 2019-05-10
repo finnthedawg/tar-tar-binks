@@ -7,13 +7,14 @@
 #include <set>
 #include <string>
 #include <vector>
-#include <iostream>
+#include <cstdio>
 #include <fstream>
-#include "common.h"
-#include "extract.h"
-#include "append.h"
-#include "store.h"
+#include <iostream>
 #include "meta.h"
+#include "store.h"
+#include "common.h"
+#include "append.h"
+#include "extract.h"
 #include "hierarchy.h"
 
 /* function to check for valid inputs and store archiveName name in archiveName
