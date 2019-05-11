@@ -9,6 +9,7 @@
 #include <vector>
 #include <cstdio>
 #include <fstream>
+#include <csignal>
 #include <iostream>
 #include "meta.h"
 #include "store.h"
@@ -23,7 +24,17 @@
 bool chk_cmd_args(int argc, char *argv[], std::string& archiveName,
                   std::vector<std::string>& inputList, std::string& flag, int& version);
 
+void signalHandler( int signum ) {
+	std::cerr << "Interrupt signal (" << signum << ") received.\n";
+	std::cerr << "Incorrect Usage: tartar -flag <archive-file> <file/directory list>" << std::endl;
+	// cleanup and close up stuff here
+	// terminate program
+	exit(signum);
+}
+
 int main(int argc, char *argv[]) {
+	// register signal SIGSEGV and signal handler
+	signal(SIGABRT, signalHandler);
 	std::string archiveName, flag;
 	std::vector<std::string> inputList;
 	int version; // will be equal to -1 if -o version number is not specified
@@ -44,10 +55,39 @@ int main(int argc, char *argv[]) {
 	}
 
 	std::cout << "DEBUG TARTAR WILL NOW COMMENCE\n" \
-	          << archiveName <<" " << " "<< version << " Should have smth before" << std::endl;
-	// iterating through the inputList cector to print everything out
-	for(std::vector<int>::size_type i = 0; i != inputList.size(); i++) {
-		std::cout << "DEBUG" << inputList[i] << std::endl;
+	          << "Archive Name is " <<archiveName << ". Version is "<< version << std::endl;
+
+	// Loop through the inputList for all flags except for the -m and -p flag
+	switch (flag[1]) {
+	case 'c':
+		std::cout << "DEBUG -c flag used. Files/dirs are:" << '\n';
+		// iterating through the inputList cector to print everything out
+		for(std::vector<int>::size_type i = 0; i != inputList.size(); i++) {
+			std::cout << "DEBUG " << inputList[i] << std::endl;
+		}
+		break;
+	case 'a':
+		std::cout << "DEBUG -a flag used. Files/dirs are:" << '\n';
+		// iterating through the inputList cector to print everything out
+		for(std::vector<int>::size_type i = 0; i != inputList.size(); i++) {
+			std::cout << "DEBUG " << inputList[i] << std::endl;
+		}
+		break;
+	case 'x':
+		std::cout << "DEBUG -x flag used. Files/dirs are:" << '\n';
+		// iterating through the inputList cector to print everything out
+		for(std::vector<int>::size_type i = 0; i != inputList.size(); i++) {
+			std::cout << "DEBUG " << inputList[i] << std::endl;
+		}
+		break;
+	case 'm':
+		std::cout << "DEBUG -m flag." << '\n';
+		break;
+	case 'p':
+		std::cout << "DEBUG -p flag." << '\n';
+		break;
+	default:
+		std::cout << "ERROR: invalid flags" << '\n';
 	}
 
 
@@ -59,7 +99,7 @@ int main(int argc, char *argv[]) {
 /* Function to check for illegal args while invoking the tar archiver */
 bool chk_cmd_args(int argc, char *argv[], std::string& archiveName,
                   std::vector<std::string>& inputList, std::string& flag, int& version){
-	if (argc < 4) {
+	if (argc < 3) {
 		return false;
 	}
 
@@ -70,14 +110,16 @@ bool chk_cmd_args(int argc, char *argv[], std::string& archiveName,
 		return false;
 	}
 	// checking if -x flag used correctly
-	if ((std::string)argv[1] == "-x" && (std::string)argv[2] == "-o" && argc == 6) {
-		flag = (std::string)argv[1];
-		version = std::stoi(argv[3]);
-		archiveName = (std::string)argv[4];
-		for (int i = 5; i < argc; i++) {
-			inputList.push_back(argv[i]);
+	if ((std::string)argv[1] == "-x" ) {
+		if ((std::string)argv[2] == "-o" && argc >= 6) {
+			flag = (std::string)argv[1];
+			version = std::stoi(argv[3]);
+			archiveName = (std::string)argv[4];
+			for (int i = 5; i < argc; i++) {
+				inputList.push_back(argv[i]);
+			}
+			return true;
 		}
-		return true;
 	}
 
 	for (int i = 3; i < argc; i++) {
