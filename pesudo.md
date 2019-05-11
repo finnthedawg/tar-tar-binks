@@ -5,7 +5,8 @@
 ```C++
 struct Header {
     long long offsetToMeta;       // Byte offset to end of files or start of metadata
-    int fileCount;                // Number of files/folders
+    int fileCount;                // Number of files
+    int folderCount;              // Number of folders
 }
 ```
 
@@ -23,8 +24,8 @@ struct Metadata {
     /* file information stored in inode */
     int filePermission;
     int numberOfLinks;
-    char owner[1024];
-    char groupOwner[1024];
+    char userID[1024];
+    char groupID[1024];
     long long fileSize;
     char date[30];
     char fileName[FILENAME_MAX]
@@ -71,6 +72,14 @@ initialize_file(string tarPath){
 }
 ```
 
+#### Read Header from disk
+```C++
+struct Header read_header_from_disk( arhive_file_pointer ) {
+    // TODO read the size of long long to read the offsetToMeta
+    // TODO read the size of int to read the number of files & folders
+}
+```
+
 #### Read Metadata from disk
 
 ```C++
@@ -82,6 +91,13 @@ vector <struct Metadata> read_metadata_from_disk(long long offset){
         metadataVector.push(meta);
     } while (meta != NULL);
     return metaVector
+}
+```
+
+#### Write Header to disk
+```C++
+write_header_to_disk (struct Header) {
+    // TODO write info header struct info to disk (i.e. offsetToMeta)
 }
 ```
 
@@ -97,11 +113,12 @@ write_metadata_to_disk(long long offset, vector <struct Metadata>){
 }
 ```
 
-#### Update Version in Metadata or add to it in memory
+#### Add updated version or new Meta struct to Metadata in memory
 
 ```C++
-/* Search through Global Metadata Struct to update version.
-   Push to vector if not found */
+/* Search through Global Metadata Struct to see if a prev ver exists
+   Push an updated version meta to vector if found
+   Push a new meta to vector if not found */
 update_metadata_in_memory(vector <struct Metadata> *metaVector, read_file_pointer) {
     // TODO Search through the Global Metadata Struct to update the version
     // TODO if not found, push to vector
@@ -132,6 +149,12 @@ append_file_to_disk(file_file_pointer){
 }
 ```
 
-### Check for hardlinks and softlinks
+#### Check for hardlinks and softlinks
 
--   discard hard/soft links outside the scope of the directory that is being archived
+```C++
+// While running Iteration through directories
+// discard hard/soft links outside the scope of the directory that is being archived
+
+
+
+```
