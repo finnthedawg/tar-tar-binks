@@ -17,16 +17,19 @@ struct Metadata {
 	char pathToObject[FILENAME_MAX];
 	int version;                  // version of file/directory
 	long long offsetToNext;       // TODO offset to next Metadata struct object
-	Metadata *next;  // TODO pointer to the next metadata struct object
 
 	/* file information stored in inode */
-	int filePermission;
-	int numberOfLinks;
-	char userID[1024];
-	char groupID[1024];
-	long long fileSize;
-	char date[30];
 	char fileName[FILENAME_MAX];
+	char userID[20];
+	char groupID[20];
+	int filePermission;
+	long long fileSize;
+	int numberOfLinks;
+	char accessDate[40];
+	char modifyDate[40];
+	char changeDate[40];
+	char birthDate[40];
+	int inode;
 };
 
 /* Defining functions here */
