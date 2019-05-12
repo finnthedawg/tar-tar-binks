@@ -1,3 +1,3 @@
 #include "extract.h"
 
-/* Implementation for -p flag*/
+/* Implementation for -x flag*/

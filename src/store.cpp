@@ -1,3 +1,3 @@
 #include "store.h"
 
-/* Implementation for -p flag*/
+/* Implementation for -c flag*/

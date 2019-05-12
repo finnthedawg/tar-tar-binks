@@ -1,3 +1,3 @@
 #include "append.h"
 
-/* Implementation for -p flag*/
+/* Implementation for -a flag*/

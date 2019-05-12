@@ -1,3 +1,3 @@
 #include "meta.h"
 
-/* Implementation for -p flag*/
+/* Implementation for -m flag*/
