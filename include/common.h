@@ -16,38 +16,62 @@ struct Metadata {
 	int directory;                // 1 if metadata refers to a folder otherwise 0
 	char pathToObject[FILENAME_MAX];
 	int version;                  // version of file/directory
-	long long offsetToNext;       // TODO offset to next Metadata struct object
 
 	/* file information stored in inode */
 	char fileName[FILENAME_MAX];
 	char userID[20];
 	char groupID[20];
-	int filePermission;
-	long long fileSize;
+	char filePermission[40];
+	char fileSize[40];
 	int numberOfLinks;
 	char accessDate[40];
 	char modifyDate[40];
 	char changeDate[40];
 	char birthDate[40];
-	int inode;
+	char inode[40];
 };
 
 /* Defining functions here */
 
 /* Recursive iteration through directories in disk and add the information about the file/directory to
     the metadata vector and Immediately write to archive file on disk if its a file */
-void iterate_through_dir(std::string baseDirName, std::fstream &archivePtr, struct Header &mainHeader);
+void iterate_through_dir(std::string baseDirName,
+                         std::fstream &archivePtr,
+                         struct Header &mainHeader,
+                         std::vector <struct Metadata> &metaVector,
+                         char flag);
 
 /* Write header to disk */
-int write_header_to_disk(struct Header &mainHeader, std::fstream &archivePtr);
+int write_header_to_disk(struct Header &mainHeader,
+                         std::fstream &archivePtr);
 
-/* Add updated version or new Meta struct to Metadata in memory when using -a APPEND flag */
+/* Create a new Metadata object */
+struct Metadata create_Metadata_object(std::string pathToObject);
+
+/* Add updated version or new Meta struct to Metadata in memory*/
 /* When using -a append flag, search through Global Metadata Struct to see if a prev ver exists
    Push an updated version meta to vector if found
-   Push a new meta to vector if not found */
-int update_metadata_in_memory(std::vector <struct Metadata> &metaVector, std::fstream &readFilePtr);
+   Push a new meta to vector if not found
+   For flag = c, push to metaVector directly without checking for old versions */
+int update_metadata_in_memory( std::string fileName,
+                               std::string pathToObject,
+                               std::vector <struct Metadata> &metaVector,
+                               std::fstream &archivePtr,
+                               char flag);
 
+/* Append to Metadata in memory and Add New Files to archive file on disk
+   This function should only be called for files not directories */
+int append_to_metadata(std::string fileName,
+                       std::string pathToObject,
+                       std::vector <struct Metadata> &metaVector,
+                       struct Header &mainHeader,
+                       std::fstream &archivePtr,
+                       char flag);
+
+/* Utility functions */
 /* Append/Write the file to the archive on disk for -c CREATE and -a APPEND flag */
-int append_file_to_disk(std::fstream &archivePtr, std::string pathToObject, struct Header &mainHeader);
+int append_file_to_disk(std::fstream &archivePtr,
+                        std::string pathToObject,
+                        struct Header &mainHeader);
 
 #endif
