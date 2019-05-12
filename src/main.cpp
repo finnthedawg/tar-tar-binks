@@ -31,10 +31,11 @@ void signalHandler( int signum );
 int main(int argc, char *argv[]) {
 	// register signal SIGSEGV and signal handler
 	signal(SIGABRT, signalHandler);
-	std::string archiveName, flag;
-	std::vector<std::string> inputList;
-	int version; // will be equal to -1 if -o version number is not specified
-    Header mainHeader;
+	std::string archiveName, flag;      // name of archive file, flag used
+	std::vector<std::string> inputList; // vector of folder/files to archive/check version or extract
+	int version;                        // will be equal to -1 if -o version number is not specified
+	Header mainHeader;
+	std::vector<struct Metadata> metaVector;
 
 	/* Checking for valid cmd args */
 	if (chk_cmd_args(argc, argv, archiveName, inputList, flag, version) == false ) {
@@ -61,7 +62,7 @@ int main(int argc, char *argv[]) {
 		// iterating through the inputList vector to get all the files/dirs to archive
 		for(std::vector<int>::size_type i = 0; i != inputList.size(); i++) {
 			std::cout << "DEBUG " << inputList[i] << std::endl;
-            iterate_through_dir(inputList[i], archivePtr, mainHeader);
+			iterate_through_dir(inputList[i], archivePtr, mainHeader);
 		}
 		break;
 	case 'a': // -a append flag
@@ -86,16 +87,16 @@ int main(int argc, char *argv[]) {
 		// TODO print out meta data
 		std::cout << "DEBUG -m flag." << '\n';
 
-        /* If no files are specified then print out Metadata of all files in archive */
-        if (argc == 3) {
-            /* code */
-        }
-        // iterating through the inputList vector to print the metadata for all mentioned files/folders
-        for(std::vector<int>::size_type i = 0; i != inputList.size(); i++) {
-            std::cout << "DEBUG " << inputList[i] << std::endl;
+		/* If no files are specified then print out Metadata of all files in archive */
+		if (argc == 3) {
+			/* code */
+		}
+		// iterating through the inputList vector to print the metadata for all mentioned files/folders
+		for(std::vector<int>::size_type i = 0; i != inputList.size(); i++) {
+			std::cout << "DEBUG " << inputList[i] << std::endl;
 
-            // TODO run the extract function for each file/dir in the inputList
-        }
+			// TODO run the extract function for each file/dir in the inputList
+		}
 		break;
 	case 'p': // -p print directory hierarchy flag
 		// TODO print the directory hierarchy
