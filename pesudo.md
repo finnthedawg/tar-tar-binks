@@ -6,7 +6,7 @@
 struct Header {
     long long offsetToMeta;       // Byte offset to end of files or start of metadata
     int fileCount;                // Number of files
-    int folderCount;              // Number of folders
+    int directoryCount;              // Number of folders
 }
 ```
 
@@ -101,7 +101,7 @@ write_header_to_disk (struct Header) {
 }
 ```
 
-#### Write metadata to disk
+#### Write Metadata to disk
 
 ```C++
 /* Call this function at the very end */
