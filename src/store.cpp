@@ -22,9 +22,6 @@ int store_archive(std::vector<std::string> inputList, std::fstream &archivePtr,
 		iterate_through_dir(inputList[i], archivePtr, mainHeader, metaVector, 'c');
 	}
 	write_header_to_disk(mainHeader, archivePtr);
-
-	//TODO
-	// write_metadata_to_disk(long long offset, std::vector <struct Metadata> metaVector);
-
+  write_metadata_to_disk(mainHeader, archivePtr, metaVector);
 	return -1;
 }
