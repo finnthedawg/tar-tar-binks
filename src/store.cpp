@@ -18,8 +18,8 @@ int store_archive(std::vector<std::string> inputList, std::fstream &archivePtr,
     // iterate_through_dir write the contents of all files that have been found
     // starting from the mainHeader.offsetToMeta
 	for(std::vector<int>::size_type i = 0; i != inputList.size(); i++) {
-		std::cout << "DEBUG " << inputList[i] << std::endl;
-		iterate_through_dir(inputList[i], archivePtr, mainHeader);
+		if (DEBUG) std::cout << "DEBUG " << inputList[i] << std::endl;
+		iterate_through_dir(inputList[i], archivePtr, mainHeader, metaVector, 'c');
 	}
 	write_header_to_disk(mainHeader, archivePtr);
 
