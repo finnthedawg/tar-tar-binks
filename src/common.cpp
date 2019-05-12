@@ -33,17 +33,19 @@ void iterate_through_dir(std::string baseDirName, std::fstream& archivePtr, stru
 					std::cerr << "ERROR <" << errno << "> Unable to get stat info on " << baseDirName+"/"+dirReadPointer->d_name << '\n';
 				}
 
-				std::string uid, gid, mode, size, modifyDate, inode;
+				std::string userId, groupId, mode, size, accessDate, modifyDate, changeDate, birthDate, inode;
 				int numHardLinks;
 
-				uid = std::to_string(fileStat.st_uid);
-				gid = std::to_string(fileStat.st_gid);
+				userId = std::to_string(fileStat.st_uid);
+				groupId = std::to_string(fileStat.st_gid);
 				mode = std::to_string(fileStat.st_mode);
 				size = std::to_string(fileStat.st_size);
+				accessDate = std::to_string(fileStat.st_atime);
 				modifyDate = std::to_string(fileStat.st_mtime);
+				changeDate = std::to_string(fileStat.st_ctime);
+				birthDate = std::to_string(fileStat.st_birthtime);
 				inode = std::to_string(fileStat.st_ino);
 				numHardLinks = (int)fileStat.st_nlink;
-
 
 				std::cout << "File name: " << baseDirName << "/" << dirReadPointer->d_name  << std::endl;
 				std::cout << "User ID: " << fileStat.st_uid << std::endl;
@@ -51,8 +53,12 @@ void iterate_through_dir(std::string baseDirName, std::fstream& archivePtr, stru
 				std::cout << "Mode: " << fileStat.st_mode << std::endl;
 				std::cout << "Size: " << fileStat.st_size << std::endl;
 				std::cout << "Number of hard links to the file: " << fileStat.st_nlink << std::endl;
-				std::cout << "Last modification date: " << fileStat.st_mtime << std::endl;
 				std::cout << "Inode number: " << fileStat.st_ino << std::endl;
+				std::cout << "Last access date: " << fileStat.st_atime << std::endl;
+				std::cout << "Last modification date: " << fileStat.st_mtime << std::endl;
+				std::cout << "Last change date: " << fileStat.st_ctime << std::endl;
+				std::cout << "Birth / creation date: " << fileStat.st_birthtime << std::endl;
+
 
 				if (dirReadPointer->d_type == DT_REG) {  // if dirReadPointer is a file
 					mainHeader.fileCount++;
