@@ -5,7 +5,7 @@
 
 /* struct for header */
 struct Header {
-	long long offsetToMeta;       // Byte offset to end of files or start of metadata
+	long offsetToMeta;       // Byte offset to end of files or start of metadata
 	int fileCount;                // Number of files
 	int directoryCount;              // Number of folders
 };
@@ -16,7 +16,7 @@ struct Metadata {
 	int directory;                // 1 if metadata refers to a folder otherwise 0
 	char pathToObject[FILENAME_MAX];
 	int version;                  // version of file/directory
-
+	long offsetToFileStart;				// offset to START of file metadata refers to. Value et to -1 for directories
 	/* file information stored in inode */
 	char fileName[FILENAME_MAX];
 	char userID[20];
@@ -46,14 +46,17 @@ int write_header_to_disk(struct Header &mainHeader,
                          std::fstream &archivePtr);
 
 /* Create a new Metadata object */
-struct Metadata create_Metadata_object(std::string pathToObject);
+struct Metadata create_Metadata_object(struct Header &mainHeader,
+                                       std::string fileName,
+                                       std::string pathToObject);
 
 /* Add updated version or new Meta struct to Metadata in memory*/
 /* When using -a append flag, search through Global Metadata Struct to see if a prev ver exists
    Push an updated version meta to vector if found
    Push a new meta to vector if not found
    For flag = c, push to metaVector directly without checking for old versions */
-int update_metadata_in_memory( std::string fileName,
+int update_metadata_in_memory( struct Header &mainHeader,
+															 std::string fileName,
                                std::string pathToObject,
                                std::vector <struct Metadata> &metaVector,
                                std::fstream &archivePtr,
