@@ -44,7 +44,7 @@ void iterate_through_dir(std::string baseDirName,
 					mainHeader.directoryCount++;
 					if (DEBUG) std::cout << "DEBUG: name of directory=" << dirReadPointer->d_name << std::endl;
 					// TODO
-					update_metadata_in_memory(dirReadPointer->d_name, pathToObject, metaVector, archivePtr, flag);
+					update_metadata_in_memory(mainHeader, dirReadPointer->d_name, pathToObject, metaVector, archivePtr, flag);
 					iterate_through_dir(pathToObject, archivePtr, mainHeader, metaVector, flag);
 				}
 			}
@@ -68,23 +68,23 @@ void iterate_through_dir(std::string baseDirName,
 int write_header_to_disk(struct Header &mainHeader,
                          std::fstream &archivePtr) {
 	if (archivePtr.is_open()) {
-    if (DEBUG==0) std::cout << "DEBUG Current ptr loc in archivePtr is " << archivePtr.tellg() << std::endl;
+    if (DEBUG==0) std::cout << "DEBUG Current ptr loc in archivePtr is " << archivePtr.tellg() <<" "<< archivePtr.tellp() << std::endl;
 		archivePtr.clear();                 // clear the eof flag if it has been set for archivePtr
-    if (DEBUG==0) std::cout << "DEBUG Current ptr loc in archivePtr is " << archivePtr.tellg() << std::endl;
-		archivePtr.seekp(0, std::fstream::beg); // reset the archivePtr to the start of the archive file
-    if (DEBUG==0) std::cout << "DEBUG Current ptr loc in archivePtr is " << archivePtr.tellg() << std::endl;
+    if (DEBUG==0) std::cout << "DEBUG Current ptr loc in archivePtr is " << archivePtr.tellg() <<" "<< archivePtr.tellp() << std::endl;
+		archivePtr.seekp(0, std::ios::beg); // reset the archivePtr to the start of the archive file
+    if (DEBUG==0) std::cout << "DEBUG Current ptr loc in archivePtr is " << archivePtr.tellg() <<" "<< archivePtr.tellp() << std::endl;
 		int mainHeaderSize = sizeof(mainHeader);
     std::cout << mainHeader.offsetToMeta << " " << mainHeader.fileCount << " " << mainHeader.directoryCount << std::endl;
 
     // fwrite(&mainHeader, sizeof(Header), 1, archivePtr);
-    if (DEBUG==0) std::cout << "DEBUG Current ptr loc in archivePtr is " << archivePtr.tellg() << std::endl;
+    if (DEBUG==0) std::cout << "DEBUG Current ptr loc in archivePtr is " << archivePtr.tellg() <<" "<< archivePtr.tellp() << std::endl;
     archivePtr.seekp(0, std::fstream::beg);
     archivePtr.write((char *)"1234567891234567", mainHeaderSize);
     // archivePtr.write((char *)(&mainHeader), mainHeaderSize);
 
-    if (DEBUG==0) std::cout << "DEBUG Current ptr loc in archivePtr is " << archivePtr.tellg() << std::endl;
+    if (DEBUG==0) std::cout << "DEBUG Current ptr loc in archivePtr is " << archivePtr.tellg() <<" "<< archivePtr.tellp() << std::endl;
     std::cout << "main hdr size is " << mainHeaderSize << '\n';
-    if (DEBUG==0) std::cout << "DEBUG Current ptr loc in archivePtr is " << archivePtr.tellg() << std::endl;
+    if (DEBUG==0) std::cout << "DEBUG Current ptr loc in archivePtr is " << archivePtr.tellg() <<" "<< archivePtr.tellp() << std::endl;
     std::cout << "Printing " << (char*)&mainHeader << std::endl;
     archivePtr.seekp(0, std::fstream::beg);
     // archivePtr.write((mainHeader.offsetToMeta), sizeof(mainHeader.offsetToMeta));
@@ -102,9 +102,9 @@ int write_header_to_disk(struct Header &mainHeader,
 /* Read Metadata from disk */
 std::vector <struct Metadata> read_metadata_from_disk(std::fstream archivePtr,
                                                       struct Header mainHeader){
-       archivePtr.seekg(mainHeader.offsetToMeta+1); // Seek to the offset of metadata Header.offsetToMeta
+       archivePtr.seekg(mainHeader.offsetToMeta); // Seek to the offset of metadata Header.offsetToMeta
        std::vector <struct Metadata> metaVector;
-       while (archivePtr) {
+       while (archivePtr.is_open()) {
          struct Metadata meta;
          archivePtr.read((char *)&meta, sizeof(Metadata));
          metaVector.push_back(meta);
@@ -118,7 +118,7 @@ std::vector <struct Metadata> read_metadata_from_disk(std::fstream archivePtr,
 int write_metadata_to_disk(struct Header &mainHeader,
                           std::fstream &archivePtr,
                           std::vector <struct Metadata> &metaVector){
-    archivePtr.seekp(mainHeader.offsetToMeta+1);
+    archivePtr.seekp(mainHeader.offsetToMeta);
     // TODO for each meta
     for(std::vector<int>::size_type i = 0; i != metaVector.size(); i++) {
         // TODO write to mainHeader.offsetToMeta
@@ -129,7 +129,8 @@ int write_metadata_to_disk(struct Header &mainHeader,
 }
 
 /* Create a new Metadata object */
-struct Metadata create_Metadata_object(std::string fileName,
+struct Metadata create_Metadata_object(struct Header &mainHeader,
+                                       std::string fileName,
                                        std::string pathToObject) {
 	// Getting the information about the file/directory
 	struct stat fileStat;
@@ -172,6 +173,7 @@ struct Metadata create_Metadata_object(std::string fileName,
 	if (S_ISDIR(fileStat.st_mode)) {
 		currentMeta.directory = 1;
 		currentMeta.file = 0;
+    currentMeta.offsetToFileStart = -1; // -1 for directories
 	}
 	// TODO TODO TODO TODO TODO TODO TODO TODO TODO
 	// additional checks for symbolic links, sockets, pipes or devices
@@ -179,6 +181,7 @@ struct Metadata create_Metadata_object(std::string fileName,
 	else {
 		currentMeta.file = 1;
 		currentMeta.directory = 0;
+    currentMeta.offsetToFileStart = mainHeader.offsetToMeta;
 	}
 	currentMeta.version = 1; // Can be updated when the -a flag is used
 	currentMeta.numberOfLinks = numHardLinks;
@@ -213,14 +216,15 @@ struct Metadata create_Metadata_object(std::string fileName,
    Push an updated version meta to vector if found
    Push a new meta to vector if not found
    For flag = c, push to metaVector directly without checking for old versions */
-int update_metadata_in_memory( std::string fileName,
+int update_metadata_in_memory( struct Header &mainHeader,
+                               std::string fileName,
                                std::string pathToObject,
                                std::vector <struct Metadata> &metaVector,
                                std::fstream &archivePtr,
                                char flag) {
 	/* create and populate a new Metadata object */
 	Metadata currentMeta;
-	currentMeta = create_Metadata_object(fileName, pathToObject);
+	currentMeta = create_Metadata_object(mainHeader, fileName, pathToObject);
 
 	/* if flag is 'a' then search through the Global Metadata Struct to update the version
 	   if not found, push to vector */
@@ -247,7 +251,7 @@ int append_to_metadata(std::string fileName,
 	   Push to vector if not found
 	   if -c flag is used, (i.e. char flag='c'), do not check for version,
 	   but add to metaVector directly */
-	update_metadata_in_memory(fileName, pathToObject, metaVector, archivePtr, flag);
+	update_metadata_in_memory(mainHeader, fileName, pathToObject, metaVector, archivePtr, flag);
 
 	// write the currently read file to disk
 	append_file_to_disk(archivePtr, pathToObject, mainHeader);
@@ -258,15 +262,17 @@ int append_to_metadata(std::string fileName,
 /* Append/Write the file to the archive on disk for -c CREATE and -a APPEND flag */
 int append_file_to_disk(std::fstream &archivePtr,
                         std::string pathToObject,
-                        struct Header &mainHeader) {
+                        struct Header &mainHeader
+                        ) {
 	/* appends file to current pffsetToMeta */
 	std::ifstream readFile;  // open a input file stream
 	char buffer;             // buffer for reading from pathToObject and writing to readFile
 
 	readFile.open(pathToObject, std::ios::binary);
-  if (DEBUG==0) std::cout << "DEBUG 1 Current FILE writer ptr loc in archivePtr is " << archivePtr.tellg() << std::endl;
-	archivePtr.seekp(mainHeader.offsetToMeta+1); // set pointer to the start of the offsetToMeta
-  if (DEBUG==0) std::cout << "DEBUG 2 Current FILE writer ptr loc in archivePtr is " << archivePtr.tellg() << std::endl;
+  if (DEBUG==0) std::cout << "DEBUG 1 Current FILE writer ptr loc in archivePtr is " << archivePtr.tellp() << std::endl;
+  archivePtr.clear();
+	archivePtr.seekp(mainHeader.offsetToMeta); // set pointer to the start of the offsetToMeta
+  if (DEBUG==0) std::cout << "DEBUG  2 Current FILE writer ptr loc in archivePtr is " << archivePtr.tellp() << std::endl;
 
   if (readFile.is_open()) {
 		while (!readFile.eof()) {
@@ -274,6 +280,7 @@ int append_file_to_disk(std::fstream &archivePtr,
 			archivePtr.put(buffer);
 			// Update the offsetToMeta offset
 			mainHeader.offsetToMeta += sizeof(buffer);
+      std::cout << "APtr = " << archivePtr.tellg() << '\n';
 		}
 		readFile.close();
 	}
@@ -283,5 +290,6 @@ int append_file_to_disk(std::fstream &archivePtr,
 		          << pathToObject << " for writing." << std::endl;
 		return -1;
 	}
+  if (DEBUG==0) std::cout << "DEBUG   3 Current FILE writer ptr loc in archivePtr is " << archivePtr.tellp() << std::endl;
 	return 0;
 }
