@@ -76,6 +76,7 @@ initialize_file(string tarPath){
 ```
 
 #### Read Header from disk
+
 ```C++
 struct Header read_header_from_disk( arhive_file_pointer ) {
     // TODO read the size of long long to read the offsetToMeta
@@ -98,6 +99,7 @@ vector <struct Metadata> read_metadata_from_disk(long long offset){
 ```
 
 #### Write Header to disk
+
 ```C++
 write_header_to_disk (struct Header) {
     // TODO write info header struct info to disk (i.e. offsetToMeta)
@@ -116,10 +118,10 @@ write_metadata_to_disk(long long offset, vector <struct Metadata>){
 }
 ```
 
-#### Add updated version or new Meta struct to Metadata in memory
+#### Add updated version or new Meta struct to Metadata in memory when using -a APPEND flag
 
 ```C++
-/* Search through Global Metadata Struct to see if a prev ver exists
+/* WHen using -a append flag, search through Global Metadata Struct to see if a prev ver exists
    Push an updated version meta to vector if found
    Push a new meta to vector if not found */
 update_metadata_in_memory(vector <struct Metadata> *metaVector, read_file_pointer) {
@@ -128,7 +130,7 @@ update_metadata_in_memory(vector <struct Metadata> *metaVector, read_file_pointe
 }
 ```
 
-#### Append to Metadata in memory and Add New Files to archive file on disk
+#### Append to Metadata in memory and Add New Files to archive file on disk when using -a APPEND flag
 
 ```C++
 append_to_metadata(vector <struct Metadata>* metaVector, read_file_pointer){
@@ -143,7 +145,7 @@ append_to_metadata(vector <struct Metadata>* metaVector, read_file_pointer){
 
 #### Utility functions
 
-##### Append/Write the file to the archive on disk
+##### Append/Write the file to the archive on disk for -c CREATE and -a APPEND flag
 
 ```C++
 append_file_to_disk(file_file_pointer){
@@ -157,7 +159,4 @@ append_file_to_disk(file_file_pointer){
 ```C++
 // While running Iteration through directories
 // discard hard/soft links outside the scope of the directory that is being archived
-
-
-
 ```
