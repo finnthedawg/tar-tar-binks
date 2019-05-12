@@ -12,6 +12,7 @@
 #include <fstream>
 #include <csignal>
 #include <iostream>
+#include <stdio.h>
 #include <dirent.h>
 #include "meta.h"
 #include "store.h"
@@ -44,6 +45,18 @@ int main(int argc, char *argv[]) {
 		return -1;
 	}
 
+	/* remove the archive file if it alreday exits for the -c create flag */
+	if (flag[1] == 'c') {
+		const int result = remove(archiveName.c_str());
+		if (DEBUG) {
+			if( result == 0 ) {
+				std::cout << "DEBUG" << archiveName << "existed and was removed" << std::endl;
+			} else {
+				std::cout << "DEBUG" << archiveName << "does not exist. No need to remove" << std::endl;
+			}
+		}
+	}
+
 	std::fstream archivePtr;
 	archivePtr.open(archiveName, std::fstream::in |
 	                std::fstream::out | std::fstream::app); // open archiveName with rd, wrt and append perm
@@ -53,30 +66,32 @@ int main(int argc, char *argv[]) {
 	}
 	mainHeader.offsetToMeta = sizeof(mainHeader);           // set the offsetToMeta to size of mainHeader
 
-	std::cout << "DEBUG TARTAR WILL NOW COMMENCE\n" \
-	          << "Archive Name is " <<archiveName << ". Version is "<< version << std::endl;
+	if (DEBUG) std::cout << "DEBUG TARTAR WILL NOW COMMENCE\n" \
+		                 << "Archive Name is " <<archiveName << ". Version is "<< version << std::endl;
 
 	// Check the flag type and run the appropriate command
 	switch (flag[1]) {
-	case 'c': // -c stpre flag
-		std::cout << "DEBUG -c flag used" << '\n';
+	case 'c': // -c store flag
+	{
+		if (DEBUG) std::cout << "DEBUG -c flag used" << '\n';
 		store_archive(inputList, archivePtr, mainHeader, metaVector);
 		break;
+	}
 	case 'a': // -a append flag
-		std::cout << "DEBUG -a flag used" << '\n';
+		if (DEBUG) std::cout << "DEBUG -a flag used" << '\n';
 		// iterating through the inputList vector to append all the stated files
 		for(std::vector<int>::size_type i = 0; i != inputList.size(); i++) {
-			std::cout << "DEBUG " << inputList[i] << std::endl;
+			if (DEBUG) std::cout << "DEBUG " << inputList[i] << std::endl;
 
 			// TODO
 			// run the append function for each file/dir in the inputList
 		}
 		break;
 	case 'x': // -x extract flag with/without -o version flag
-		std::cout << "DEBUG -x flag used" << '\n';
+		if (DEBUG) std::cout << "DEBUG -x flag used" << '\n';
 		// iterating through the inputList vector to extract all the stated files/ non-empty dirs
 		for(std::vector<int>::size_type i = 0; i != inputList.size(); i++) {
-			std::cout << "DEBUG " << inputList[i] << std::endl;
+			if (DEBUG) std::cout << "DEBUG " << inputList[i] << std::endl;
 
 			// TODO
 			// run the extract function for each file/dir in the inputList
@@ -84,7 +99,7 @@ int main(int argc, char *argv[]) {
 		break;
 	case 'm': // -m print metatdata flag
 		// TODO print out meta data
-		std::cout << "DEBUG -m flag" << '\n';
+		if (DEBUG) std::cout << "DEBUG -m flag" << '\n';
 
 		/* If no files are specified then print out Metadata of all files in archive */
 		if (argc == 3) {
@@ -92,7 +107,7 @@ int main(int argc, char *argv[]) {
 		}
 		// iterating through the inputList vector to print the metadata for all mentioned files/folders
 		for(std::vector<int>::size_type i = 0; i != inputList.size(); i++) {
-			std::cout << "DEBUG " << inputList[i] << std::endl;
+			if (DEBUG) std::cout << "DEBUG " << inputList[i] << std::endl;
 
 			// TODO
 			// run the extract function for each file/dir in the inputList
@@ -101,7 +116,7 @@ int main(int argc, char *argv[]) {
 	case 'p': // -p print directory hierarchy flag
 		// TODO
 		// print the directory hierarchy
-		std::cout << "DEBUG -p flag." << '\n';
+		if (DEBUG) std::cout << "DEBUG -p flag." << '\n';
 		break;
 	default:
 		std::cout << "ERROR: invalid flags" << '\n';
