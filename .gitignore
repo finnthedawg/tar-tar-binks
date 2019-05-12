@@ -39,3 +39,6 @@ tartar
 
 # adtar .ad files
 *.ad
+
+# test directory
+test
