@@ -58,13 +58,14 @@ int main(int argc, char *argv[]) {
 	}
 
 	std::fstream archivePtr;
-	archivePtr.open(archiveName, std::fstream::in |
-	                std::fstream::out | std::fstream::app | std::fstream::binary); // open archiveName with rd, wrt and append perm
+  archivePtr.imbue(std::locale::classic());
+	archivePtr.open(archiveName, std::ios::in |
+	                std::ios::out | std::ios::app | std::ios::binary ); // open archiveName with rd, wrt and append perm
 	if ( !(archivePtr.is_open()) ) {
 		std::cerr << "ERROR: cannot open "<< archiveName << std::endl;
 		return -1;
 	}
-  archivePtr.write("0000000000000000", sizeof(mainHeader));
+  // archivePtr.write("0000000000000000", sizeof(mainHeader));
 	mainHeader.offsetToMeta = sizeof(mainHeader);           // set the offsetToMeta to size of mainHeader
 
 	if (DEBUG) std::cout << "DEBUG TARTAR WILL NOW COMMENCE\n" \
