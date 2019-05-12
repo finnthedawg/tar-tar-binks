@@ -2,7 +2,8 @@
  * Function and variable naming convention used
  * all variables = camelCase
  * all function names = function_do_undscr()
- * structs
+ * structs Capitalized names i.e. Metadata, Header
+ * All custom defined funcs that have a return value rtn 0 on success and -1 on failure
  */
 #include <set>
 #include <string>
@@ -26,22 +27,21 @@ bool chk_cmd_args(int argc, char *argv[], std::string& archiveName,
                   std::vector<std::string>& inputList, std::string& flag, int& version);
 
 /* Signal Handler for catching SIGABRT signals */
-void signalHandler( int signum );
+void signalHandler(int signum);
 
 int main(int argc, char *argv[]) {
-	// register signal SIGSEGV and signal handler
-	signal(SIGABRT, signalHandler);
-	std::string archiveName, flag;      // name of archive file, flag used
-	std::vector<std::string> inputList; // vector of folder/files to archive/check version or extract
-	int version;                        // will be equal to -1 if -o version number is not specified
-	Header mainHeader;
-	std::vector<struct Metadata> metaVector;
+	signal(SIGABRT, signalHandler);          // register signal SIGABRT and signal handler
+	std::string archiveName, flag;           // name of archive file, flag used
+	std::vector<std::string> inputList;      // vector of folder/files to archive/check version or extract
+	int version;                             // will be equal to -1 if -o version number is not specified
+	Header mainHeader;                       // main Header struct
+	std::vector<struct Metadata> metaVector; // vector of Metadata structs
 
 	/* Checking for valid cmd args */
 	if (chk_cmd_args(argc, argv, archiveName, inputList, flag, version) == false ) {
 		// incorrect args error exit
 		std::cerr << "Incorrect Usage: ./tartar -flag <archive-file> <file/directory list>" << std::endl;
-		return 1;
+		return -1;
 	}
 
 	std::fstream archivePtr;
@@ -49,8 +49,9 @@ int main(int argc, char *argv[]) {
 	                std::fstream::out | std::fstream::app); // open archiveName with rd, wrt and append perm
 	if ( !(archivePtr.is_open()) ) {
 		std::cerr << "ERROR: cannot open "<< archiveName << std::endl;
-		return 1;
+		return -1;
 	}
+	mainHeader.offsetToMeta = sizeof(mainHeader);           // set the offsetToMeta to size of mainHeader
 
 	std::cout << "DEBUG TARTAR WILL NOW COMMENCE\n" \
 	          << "Archive Name is " <<archiveName << ". Version is "<< version << std::endl;
@@ -58,34 +59,32 @@ int main(int argc, char *argv[]) {
 	// Check the flag type and run the appropriate command
 	switch (flag[1]) {
 	case 'c': // -c stpre flag
-		std::cout << "DEBUG -c flag used. Files/dirs are:" << '\n';
-		// iterating through the inputList vector to get all the files/dirs to archive
-		for(std::vector<int>::size_type i = 0; i != inputList.size(); i++) {
-			std::cout << "DEBUG " << inputList[i] << std::endl;
-			iterate_through_dir(inputList[i], archivePtr, mainHeader);
-		}
+		std::cout << "DEBUG -c flag used" << '\n';
+		store_archive(inputList, archivePtr, mainHeader, metaVector);
 		break;
 	case 'a': // -a append flag
-		std::cout << "DEBUG -a flag used. Files/dirs are:" << '\n';
+		std::cout << "DEBUG -a flag used" << '\n';
 		// iterating through the inputList vector to append all the stated files
 		for(std::vector<int>::size_type i = 0; i != inputList.size(); i++) {
 			std::cout << "DEBUG " << inputList[i] << std::endl;
 
-			// TODO run the append function for each file/dir in the inputList
+			// TODO
+			// run the append function for each file/dir in the inputList
 		}
 		break;
 	case 'x': // -x extract flag with/without -o version flag
-		std::cout << "DEBUG -x flag used. Files/dirs are:" << '\n';
+		std::cout << "DEBUG -x flag used" << '\n';
 		// iterating through the inputList vector to extract all the stated files/ non-empty dirs
 		for(std::vector<int>::size_type i = 0; i != inputList.size(); i++) {
 			std::cout << "DEBUG " << inputList[i] << std::endl;
 
-			// TODO run the extract function for each file/dir in the inputList
+			// TODO
+			// run the extract function for each file/dir in the inputList
 		}
 		break;
 	case 'm': // -m print metatdata flag
 		// TODO print out meta data
-		std::cout << "DEBUG -m flag." << '\n';
+		std::cout << "DEBUG -m flag" << '\n';
 
 		/* If no files are specified then print out Metadata of all files in archive */
 		if (argc == 3) {
@@ -95,11 +94,13 @@ int main(int argc, char *argv[]) {
 		for(std::vector<int>::size_type i = 0; i != inputList.size(); i++) {
 			std::cout << "DEBUG " << inputList[i] << std::endl;
 
-			// TODO run the extract function for each file/dir in the inputList
+			// TODO
+			// run the extract function for each file/dir in the inputList
 		}
 		break;
 	case 'p': // -p print directory hierarchy flag
-		// TODO print the directory hierarchy
+		// TODO
+		// print the directory hierarchy
 		std::cout << "DEBUG -p flag." << '\n';
 		break;
 	default:
@@ -109,7 +110,8 @@ int main(int argc, char *argv[]) {
 	return 0;
 }
 
-void signalHandler( int signum ) {
+/* Signal Handler for catching SIGABRT signals */
+void signalHandler(int signum) {
 	std::cerr << "Interrupt signal (" << signum << ") received.\n";
 	std::cerr << "Correct Usage: ./tartar -flag <archive-file> <file/directory list>" << std::endl;
 	// cleanup and close up stuff here
