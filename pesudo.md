@@ -14,21 +14,24 @@ struct Header {
 
 ```C++
 struct Metadata {
-    int file;                    // 1 if metadata refers to a file otherwise 0
-    int directory;               // 1 if metadata refers to a folder otherwise 0
-    char pathToObject[FILENAME_MAX];
-    int version;                 // version of file/directory
-    long long offsetToNext;      // TODO offset to next Metadata struct object
-    struct Metadata next = NULL; // TODO pointer to the next metadata struct object
+    int file;                     // 1 if metadata refers to a file otherwise 0
+	int directory;                // 1 if metadata refers to a folder otherwise 0
+	char pathToObject[FILENAME_MAX];
+	int version;                  // version of file/directory
+	long long offsetToNext;       // TODO offset to next Metadata struct object
 
-    /* file information stored in inode */
-    int filePermission;
-    int numberOfLinks;
-    char userID[1024];
-    char groupID[1024];
-    long long fileSize;
-    char date[30];
-    char fileName[FILENAME_MAX]
+	/* file information stored in inode */
+	char fileName[FILENAME_MAX];
+	char userID[20];
+	char groupID[20];
+	int filePermission;
+	long long fileSize;
+	int numberOfLinks;
+	char accessDate[40];
+	char modifyDate[40];
+	char changeDate[40];
+	char birthDate[40];
+	int inode;
 }
 ```
 
@@ -88,7 +91,7 @@ vector <struct Metadata> read_metadata_from_disk(long long offset){
     vector <struct Metadata> metaVector;
     do {
         meta = read(size struct Metadata);
-        metadataVector.push(meta);
+        metaVector.push(meta);
     } while (meta != NULL);
     return metaVector
 }
