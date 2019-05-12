@@ -74,4 +74,10 @@ int append_file_to_disk(std::fstream &archivePtr,
                         std::string pathToObject,
                         struct Header &mainHeader);
 
+/* Write Metadata to disk */
+/* Call this function at the very end */
+int write_metadata_to_disk(struct Header &mainHeader,
+                          std::fstream &archivePtr,
+                          std::vector <struct Metadata> &metaVector);
+
 #endif
