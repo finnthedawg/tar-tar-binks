@@ -2,6 +2,7 @@
 #include <vector>
 #include <string>
 #include <fstream>
+#include <stdio.h>
 #include <iostream>
 #include <dirent.h>
 #include <sys/stat.h>
@@ -67,12 +68,28 @@ void iterate_through_dir(std::string baseDirName,
 int write_header_to_disk(struct Header &mainHeader,
                          std::fstream &archivePtr) {
 	if (archivePtr.is_open()) {
+    if (DEBUG==0) std::cout << "DEBUG Current ptr loc in archivePtr is " << archivePtr.tellg() << std::endl;
 		archivePtr.clear();                 // clear the eof flag if it has been set for archivePtr
-		archivePtr.seekg(0, std::ios::beg); // reset the archivePtr to the start of the archive file
-		size_t mainHeaderSize = sizeof(mainHeader);
-		if (DEBUG) std::cout << "Size of mainHeader struct is "<< sizeof(mainHeader) << std::endl;
-		archivePtr.write((char*)&mainHeader, mainHeaderSize);
-		archivePtr.write((char *)"shite", 5);
+    if (DEBUG==0) std::cout << "DEBUG Current ptr loc in archivePtr is " << archivePtr.tellg() << std::endl;
+		archivePtr.seekp(0, std::fstream::beg); // reset the archivePtr to the start of the archive file
+    if (DEBUG==0) std::cout << "DEBUG Current ptr loc in archivePtr is " << archivePtr.tellg() << std::endl;
+		int mainHeaderSize = sizeof(mainHeader);
+    std::cout << mainHeader.offsetToMeta << " " << mainHeader.fileCount << " " << mainHeader.directoryCount << std::endl;
+
+    // fwrite(&mainHeader, sizeof(Header), 1, archivePtr);
+    if (DEBUG==0) std::cout << "DEBUG Current ptr loc in archivePtr is " << archivePtr.tellg() << std::endl;
+    archivePtr.seekp(0, std::fstream::beg);
+    archivePtr.write((char *)"1234567891234567", mainHeaderSize);
+    // archivePtr.write((char *)(&mainHeader), mainHeaderSize);
+
+    if (DEBUG==0) std::cout << "DEBUG Current ptr loc in archivePtr is " << archivePtr.tellg() << std::endl;
+    std::cout << "main hdr size is " << mainHeaderSize << '\n';
+    if (DEBUG==0) std::cout << "DEBUG Current ptr loc in archivePtr is " << archivePtr.tellg() << std::endl;
+    std::cout << "Printing " << (char*)&mainHeader << std::endl;
+    archivePtr.seekp(0, std::fstream::beg);
+    // archivePtr.write((mainHeader.offsetToMeta), sizeof(mainHeader.offsetToMeta));
+    // archivePtr.write((mainHeader.fileCount), sizeof(mainHeader.fileCount));
+    // archivePtr.write((mainHeader.directoryCount), sizeof(main.directoryCount));
 	}
 	else {
 		std::cerr << "Failed to open archive file for writing header info" << std::endl;
@@ -81,32 +98,35 @@ int write_header_to_disk(struct Header &mainHeader,
 	return 0;
 }
 
-// TODO
+// TODO TODO TODO TODO TODO TODO TODO
 /* Read Metadata from disk */
+std::vector <struct Metadata> read_metadata_from_disk(std::fstream archivePtr,
+                                                      struct Header mainHeader){
+       archivePtr.seekg(mainHeader.offsetToMeta+1); // Seek to the offset of metadata Header.offsetToMeta
+       std::vector <struct Metadata> metaVector;
+       while (archivePtr) {
+         struct Metadata meta;
+         archivePtr.read((char *)&meta, sizeof(Metadata));
+         metaVector.push_back(meta);
+       }
+       return metaVector;
+}
 
-// std::vector <struct Metadata> read_metadata_from_disk(long long offset){
-//  fseek(offset); // Seek to the offset of metadata Header.offsetToMeta
-//  std::vector <struct Metadata> metaVector;
-//  do {
-//      struct Metadat meta = read(size struct Metadata);
-//      metaVector.push(meta);
-//  } while (meta != NULL);
-//  return metaVector;
-// }
-
-// TODO
+//  TODO TODO TODO TODO TODO TODO
 /* Write Metadata to disk */
 /* Call this function at the very end */
-
-// int write_metadata_to_disk(long long offset, std::vector <struct Metadata> metaVector){
-//     fseek(offset);
-//     // TODO for each meta
-//     for(std::vector<int>::size_type i = 0; i != metaVector.size(); i++) {
-//         std::cout << "DEBUG " << metaVector[i].filePermission << std::endl;
-//         // TODO write to mainHeader.offsetToMeta
-//     }
-//     return 0;
-// }
+int write_metadata_to_disk(struct Header &mainHeader,
+                          std::fstream &archivePtr,
+                          std::vector <struct Metadata> &metaVector){
+    archivePtr.seekp(mainHeader.offsetToMeta+1);
+    // TODO for each meta
+    for(std::vector<int>::size_type i = 0; i != metaVector.size(); i++) {
+        // TODO write to mainHeader.offsetToMeta
+        int MetadataSize = sizeof(Metadata);
+        archivePtr.write((char *)(&metaVector[i]), MetadataSize);
+    }
+    return 0;
+}
 
 /* Create a new Metadata object */
 struct Metadata create_Metadata_object(std::string fileName,
@@ -243,9 +263,12 @@ int append_file_to_disk(std::fstream &archivePtr,
 	std::ifstream readFile;  // open a input file stream
 	char buffer;             // buffer for reading from pathToObject and writing to readFile
 
-	readFile.open(pathToObject);
-	archivePtr.seekg(mainHeader.offsetToMeta); // set pointer to the start of the offsetToMeta
-	if (readFile.is_open()) {
+	readFile.open(pathToObject, std::ios::binary);
+  if (DEBUG==0) std::cout << "DEBUG 1 Current FILE writer ptr loc in archivePtr is " << archivePtr.tellg() << std::endl;
+	archivePtr.seekp(mainHeader.offsetToMeta+1); // set pointer to the start of the offsetToMeta
+  if (DEBUG==0) std::cout << "DEBUG 2 Current FILE writer ptr loc in archivePtr is " << archivePtr.tellg() << std::endl;
+
+  if (readFile.is_open()) {
 		while (!readFile.eof()) {
 			buffer = (char) readFile.get();
 			archivePtr.put(buffer);
