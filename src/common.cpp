@@ -183,20 +183,20 @@ struct Metadata create_Metadata_object(struct Header &mainHeader,
 		currentMeta.directory = 0;
 		currentMeta.offsetToFileStart = mainHeader.offsetToMeta;
 	}
-    // TODO TODO TODO TODO Current implementation is incorrect, as sizeof(string) = size of pointer to string
+	// As sizeof(string) = size of pointer to string, we have to use string.length()
 	currentMeta.version = 1; // Can be updated when the -a flag is used
 	currentMeta.numberOfLinks = numHardLinks;
-	strncpy(currentMeta.inode, (inode+"\0").c_str(), sizeof(inode)+1);
-	strncpy(currentMeta.fileSize, (size+"\0").c_str(), sizeof(size)+1);
-	strncpy(currentMeta.userID, (userID+"\0").c_str(), sizeof(userID)+1);
-	strncpy(currentMeta.groupID, (groupID+"\0").c_str(), sizeof(groupID)+1);
-	strncpy(currentMeta.filePermission, (mode+"\0").c_str(), sizeof(mode)+1);
-	strncpy(currentMeta.fileName, (fileName+"\0").c_str(), sizeof(fileName)+1);
-	strncpy(currentMeta.birthDate, (birthDate+"\0").c_str(), sizeof(birthDate)+1);
-	strncpy(currentMeta.accessDate, (accessDate+"\0").c_str(), sizeof(accessDate)+1);
-	strncpy(currentMeta.modifyDate, (modifyDate+"\0").c_str(), sizeof(modifyDate)+1);
-	strncpy(currentMeta.changeDate, (changeDate+"\0").c_str(), sizeof(changeDate)+1);
-	strncpy(currentMeta.pathToObject, (pathToObject+"\0").c_str(), sizeof(pathToObject)+1);
+	strncpy(currentMeta.inode, (inode+"\0").c_str(), inode.length()+1);
+	strncpy(currentMeta.fileSize, (size+"\0").c_str(), size.length()+1);
+	strncpy(currentMeta.userID, (userID+"\0").c_str(), userID.length()+1);
+	strncpy(currentMeta.groupID, (groupID+"\0").c_str(), groupID.length()+1);
+	strncpy(currentMeta.filePermission, (mode+"\0").c_str(), mode.length()+1);
+	strncpy(currentMeta.fileName, (fileName+"\0").c_str(), fileName.length()+1);
+	strncpy(currentMeta.birthDate, (birthDate+"\0").c_str(), birthDate.length()+1);
+	strncpy(currentMeta.accessDate, (accessDate+"\0").c_str(), accessDate.length()+1);
+	strncpy(currentMeta.modifyDate, (modifyDate+"\0").c_str(), modifyDate.length()+1);
+	strncpy(currentMeta.changeDate, (changeDate+"\0").c_str(), changeDate.length()+1);
+	strncpy(currentMeta.pathToObject, (pathToObject+"\0").c_str(), pathToObject.length()+1);
 	/*
 	   currentMeta.userID = (userID+"\0").c_str();
 	   currentMeta.groupID = (groupID+"\0").c_str();
@@ -208,7 +208,6 @@ struct Metadata create_Metadata_object(struct Header &mainHeader,
 	   currentMeta.changeDate = (changeDate+"\0").c_str();
 	   currentMeta.pathToObject = (pathToObject+"\0").c_str();
 	 */
-
 	return currentMeta; // return the populated Metadata object
 }
 
@@ -226,7 +225,6 @@ int update_metadata_in_memory( struct Header &mainHeader,
 	/* create and populate a new Metadata object */
 	Metadata currentMeta;
 	currentMeta = create_Metadata_object(mainHeader, fileName, pathToObject);
-
 	/* if flag is 'a' then search through the Global Metadata Struct to update the version
 	   if not found, push to vector */
 	if (flag == 'a') {
@@ -248,14 +246,11 @@ int append_to_metadata(std::string &fileName,
                        struct Header &mainHeader,
                        std::fstream &archivePtr,
                        char flag){
-	if (DEBUG) std::cout << "Filename and size is " << fileName << "  size: " << sizeof(fileName) << '\n';
-	if (DEBUG) std::cout << "Path to object name is" << pathToObject << " size: " << sizeof(pathToObject) <<  '\n';
 	/* Search through global metadata Struct to update version.
 	   Push to vector if not found
 	   if -c flag is used, (i.e. char flag='c'), do not check for version,
 	   but add to metaVector directly */
 	update_metadata_in_memory(mainHeader, fileName, pathToObject, metaVector, archivePtr, flag);
-
 	// write the currently read file to disk
 	append_file_to_disk(archivePtr, pathToObject, mainHeader);
 	return 0;
@@ -269,7 +264,6 @@ int append_file_to_disk(std::fstream &archivePtr,
                         ) {
 	/* appends file to current pffsetToMeta */
 	std::ifstream readFile;  // open a input file stream
-
 	readFile.open(pathToObject, std::ios::binary);
 	if (DEBUG==0) std::cout << "DEBUG 1 Current FILE writer ptr loc in archivePtr is " << archivePtr.tellp() << std::endl;
 	archivePtr.clear();
@@ -277,7 +271,7 @@ int append_file_to_disk(std::fstream &archivePtr,
 	if (DEBUG==0) std::cout << "DEBUG   2 Current FILE writer ptr loc in archivePtr is " << archivePtr.tellp() << std::endl;
 
 	if (readFile.is_open()) {
-		char buffer;             // buffer for reading from pathToObject and writing to readFile
+		char buffer;                           // buffer for reading from pathToObject and writing to readFile
 		while (!readFile.eof()) {
 			buffer = (char) readFile.get();
 			archivePtr.put(buffer);
