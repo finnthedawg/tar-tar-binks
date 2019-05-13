@@ -46,34 +46,34 @@ int main(int argc, char *argv[]) {
 	}
 
 	std::fstream archivePtr;
-  archivePtr.imbue(std::locale::classic());
+	archivePtr.imbue(std::locale::classic());
 	archivePtr.open(archiveName, std::ios::in |
 	                std::ios::out | std::ios::app | std::ios::binary ); // open archiveName with rd, wrt and append perm
 	if ( !(archivePtr.is_open()) ) {
 		std::cerr << "ERROR: cannot open "<< archiveName << std::endl;
 		return -1;
 	}
-  /* remove the archive file if it alreday exits for the -c create flag */
-  if (flag[1] == 'c') {
-    const int result = remove(archiveName.c_str());
-    if (DEBUG) {
-      if( result == 0 ) {
-        std::cout << "DEBUG" << archiveName << "existed and was removed" << std::endl;
-      } else {
-        std::cout << "DEBUG" << archiveName << "does not exist. No need to remove" << std::endl;
-      }
-    }
-    mainHeader.offsetToMeta = sizeof(mainHeader); // set the offsetToMeta to size of mainHeader
-  } else { //If not creating archive, parse the information
-    if (file_size(archivePtr) <= sizeof(mainHeader)){
-      std::cerr << "Empty archive\n";
-      exit(0);
-    }
-    /* Read the header information */
-    archivePtr.read(reinterpret_cast<char*>(&mainHeader),sizeof(mainHeader));
-    if (DEBUG) std::cout << "DEBUG Read header offset:" << mainHeader.offsetToMeta \
-                        << " fileCount: " << mainHeader.fileCount << " directoryCount " << mainHeader.directoryCount << std::endl;
-  }
+	/* remove the archive file if it alreday exits for the -c create flag */
+	if (flag[1] == 'c') {
+		const int result = remove(archiveName.c_str());
+		if (DEBUG) {
+			if( result == 0 ) {
+				std::cout << "DEBUG" << archiveName << "existed and was removed" << std::endl;
+			} else {
+				std::cout << "DEBUG" << archiveName << "does not exist. No need to remove" << std::endl;
+			}
+		}
+		mainHeader.offsetToMeta = sizeof(mainHeader); // set the offsetToMeta to size of mainHeader
+	} else { //If not creating archive, parse the information
+		if (file_size(archivePtr) <= sizeof(mainHeader)) {
+			std::cerr << "Empty archive\n";
+			exit(0);
+		}
+		/* Read the header information */
+		archivePtr.read(reinterpret_cast<char*>(&mainHeader),sizeof(mainHeader));
+		if (DEBUG) std::cout << "DEBUG Read header offset:" << mainHeader.offsetToMeta \
+			                 << " fileCount: " << mainHeader.fileCount << " directoryCount " << mainHeader.directoryCount << std::endl;
+	}
 
 	if (DEBUG) std::cout << "DEBUG TARTAR WILL NOW COMMENCE\n" \
 		                 << "Archive Name is " <<archiveName << ". Version is "<< version << std::endl;
@@ -83,11 +83,11 @@ int main(int argc, char *argv[]) {
 	case 'c': // -c store flag
 	{
 		if (DEBUG) std::cout << "DEBUG -c flag used" << '\n';
-    if (file_size(archivePtr) != 0){
-      std::cerr << "Archive already exists, please use the append or extract flags\n";
-      exit(0);
-    }
-    archivePtr.write(reinterpret_cast<char*>(&mainHeader),sizeof(mainHeader)); //Initialize the header in archive.
+		if (file_size(archivePtr) != 0) {
+			std::cerr << "Archive already exists, please use the append or extract flags\n";
+			exit(0);
+		}
+		archivePtr.write(reinterpret_cast<char*>(&mainHeader),sizeof(mainHeader)); //Initialize the header in archive.
 		store_archive(inputList, archivePtr, mainHeader, metaVector);
 		break;
 	}
