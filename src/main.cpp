@@ -25,7 +25,7 @@
     and input files/directory names in inputList string array, tartar flag in flag
     and the version number from -o which will be set to -1 if not specified */
 bool check_cmd_args(int argc, char *argv[], std::string& archiveName,
-                  std::vector<std::string>& inputList, std::string& flag, int& version);
+                    std::vector<std::string>& inputList, std::string& flag, int& version);
 
 /* Signal Handler for catching SIGABRT signals */
 void signalHandler(int signum);
@@ -79,8 +79,7 @@ int main(int argc, char *argv[]) {
 			                 << " fileCount: " << mainHeader.fileCount << " directoryCount " << mainHeader.directoryCount << std::endl;
 	}
 
-	if (DEBUG) std::cout << "DEBUG TARTAR WILL NOW COMMENCE\n" \
-		                 << "DEBUG Archive Name is " <<archiveName << ". Version is "<< version << std::endl;
+	if (DEBUG) std::cout << "DEBUG Archive Name is " <<archiveName << ". Version is "<< version << std::endl;
 
 	// Check the flag type and run the appropriate command
 	switch (flag[1]) {
@@ -88,17 +87,12 @@ int main(int argc, char *argv[]) {
 	{
 		if (DEBUG) std::cout << "DEBUG -c flag used" << '\n';
 		archivePtr.write(reinterpret_cast<char*>(&mainHeader),sizeof(mainHeader)); //Initialize the header in archive.
-		store_archive(inputList, archivePtr, mainHeader, metaVector);
+		store_archive(inputList, archivePtr, mainHeader, metaVector, 'c');
 		break;
 	}
-	case 'a': // -a append flag TODO
+	case 'a': // -a append flag
 		if (DEBUG) std::cout << "DEBUG -a flag used" << '\n';
-		// iterating through the inputList vector to append all the stated files
-		for(std::vector<int>::size_type i = 0; i != inputList.size(); i++) {
-			if (DEBUG) std::cout << "DEBUG " << inputList[i] << std::endl;
-			// TODO
-			// run the append function for each file/dir in the inputList
-		}
+		append_archive(inputList, archivePtr, mainHeader, metaVector, 'a');
 		break;
 	case 'x': // -x extract flag with/without -o version flag TODO
 		if (DEBUG) std::cout << "DEBUG -x flag used" << '\n';
@@ -146,7 +140,7 @@ void signalHandler(int signum) {
 
 /* Function to check for illegal args while invoking the tar archiver */
 bool check_cmd_args(int argc, char *argv[], std::string& archiveName,
-                  std::vector<std::string>& inputList, std::string& flag, int& version){
+                    std::vector<std::string>& inputList, std::string& flag, int& version){
 	if (argc < 3) return false;
 	if ((std::string)argv[1] == "-c" && argc < 4) return false;   // checking if -c flag used correctly
 	std::set<std::string> vFlag = {"-c", "-a", "-x", "-m", "-p"}; // set of valid flags
