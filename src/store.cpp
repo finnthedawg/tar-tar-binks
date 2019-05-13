@@ -58,7 +58,7 @@ int store_archive(std::vector<std::string> inputList, std::fstream &archivePtr,
 	write_header_to_disk(mainHeader, archivePtr);
 	write_metadata_to_disk(mainHeader, archivePtr, metaVector);
 
-	if (DEBUG) std::cout << "REMOVE LATER PRINTING OUT META INFORMATION FOR TESTING" << '\n';
+	if (DEBUG) std::cout << "DEBUG REMOVE LATER PRINTING OUT META INFORMATION FOR TESTING" << '\n';
 	display_metadata_from_archive (metaVector, inputList[0], true);
 	return 0;
 }
