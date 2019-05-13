@@ -24,7 +24,7 @@
 /* function to check for valid inputs and store archiveName name in archiveName
     and input files/directory names in inputList string array, tartar flag in flag
     and the version number from -o which will be set to -1 if not specified */
-bool chk_cmd_args(int argc, char *argv[], std::string& archiveName,
+bool check_cmd_args(int argc, char *argv[], std::string& archiveName,
                   std::vector<std::string>& inputList, std::string& flag, int& version);
 
 /* Signal Handler for catching SIGABRT signals */
@@ -109,26 +109,24 @@ int main(int argc, char *argv[]) {
 			// run the extract function for each file/dir in the inputList
 		}
 		break;
-	case 'm': // -m print metatdata flag TODO
-		// TODO print out meta data
+	case 'm': // -m print metatdata flag
 		if (DEBUG) std::cout << "DEBUG -m flag" << '\n';
-
 		/* If no files are specified then print out Metadata of all files in archive */
 		if (argc == 3) {
-			/* code */
+			display_metadata_from_archive(metaVector, "NAN", true);
 		}
-		// iterating through the inputList vector to print the metadata for all mentioned files/folders
-		for(std::vector<int>::size_type i = 0; i != inputList.size(); i++) {
-			if (DEBUG) std::cout << "DEBUG " << inputList[i] << std::endl;
-
-			// TODO
-			// run the extract function for each file/dir in the inputList
+		else {
+			// files must be specified with full path i.e. dir1/dir2/dir3/file1.txt not just file1.txt
+			// iterating through the inputList vector to print the metadata for all mentioned files/folders
+			for(std::vector<int>::size_type i = 0; i != inputList.size(); i++) {
+				if (DEBUG) std::cout << "DEBUG " << inputList[i] << std::endl;
+				display_metadata_from_archive(metaVector, inputList[i], false);
+			}
 		}
 		break;
-	case 'p': // -p print directory hierarchy flag TODO
-		// TODO
-		// print the directory hierarchy
+	case 'p': // -p print directory hierarchy flag
 		if (DEBUG) std::cout << "DEBUG -p flag." << '\n';
+		display_hierarchy_from_archive(metaVector);
 		break;
 	default:
 		std::cout << "ERROR: invalid flags" << '\n';
@@ -147,20 +145,16 @@ void signalHandler(int signum) {
 }
 
 /* Function to check for illegal args while invoking the tar archiver */
-bool chk_cmd_args(int argc, char *argv[], std::string& archiveName,
+bool check_cmd_args(int argc, char *argv[], std::string& archiveName,
                   std::vector<std::string>& inputList, std::string& flag, int& version){
-	if (argc < 3) {
-		return false;
-	}
-
+	if (argc < 3) return false;
+	if ((std::string)argv[1] == "-c" && argc < 4) return false;   // checking if -c flag used correctly
 	std::set<std::string> vFlag = {"-c", "-a", "-x", "-m", "-p"}; // set of valid flags
-	const bool isValidFlag = vFlag.find(argv[1]) != vFlag.end();  // checks if the entered flag is valid
-
-	if (isValidFlag == false) {                                   // checking for invalid flags
+	if (vFlag.find(argv[1]) != vFlag.end()== false) {             // checks if the entered flag is valid
 		return false;
 	}
 	// checking if -x flag used correctly
-	if ((std::string)argv[1] == "-x" ) {
+	if ((std::string)argv[1] == "-x") {
 		if ((std::string)argv[2] == "-o" && argc >= 6) {
 			flag = (std::string)argv[1];
 			version = std::stoi(argv[3]);
@@ -171,13 +165,16 @@ bool chk_cmd_args(int argc, char *argv[], std::string& archiveName,
 			return true;
 		}
 	}
-
+	/* load the inputList with the sequence of files/folders to archive or unarchive */
 	for (int i = 3; i < argc; i++) {
 		inputList.push_back(argv[i]);
 	}
 	flag = (std::string)argv[1];
 	archiveName = (std::string)argv[2];
 	version = -1; // When no version extract is explicitely defined
-
+	if(archiveName.substr(archiveName.find_last_of(".") + 1) != "ad") {
+		std::cerr << "Archive file must end with a .ad extension" << std::endl;
+		return false;
+	}
 	return true;
 }
