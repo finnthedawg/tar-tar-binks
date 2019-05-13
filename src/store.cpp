@@ -7,6 +7,7 @@
 #include <sys/stat.h>
 #include "store.h"
 #include "common.h"
+#include "meta.h" // REMOVE LATER
 
 /* Implementation for -c flag*/
 /* function to create an archive file */
@@ -23,5 +24,8 @@ int store_archive(std::vector<std::string> inputList, std::fstream &archivePtr,
 	}
 	write_header_to_disk(mainHeader, archivePtr);
 	write_metadata_to_disk(mainHeader, archivePtr, metaVector);
-	return -1;
+
+    if (DEBUG) std::cout << "REMOVE LATER PRINTING OUT META INFORMATION FOR TESTING" << '\n';
+    display_metadata_from_archive (metaVector, "NAN", true);
+	return 0;
 }
