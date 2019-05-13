@@ -1,4 +1,4 @@
-
+#!/bin/sh
 #./adtar {-c|-a|-x|-m|-p| -o NUMBER} <archive-file> <file/directory list>
 
 echo "#####################################################"
@@ -39,12 +39,12 @@ echo "adtar -c mydir.ad  mydir"
 
 echo "Delete the original dir"
 echo "rm -r mydir"
-rm -r mydir 
+rm -r mydir
 
 echo "------------------------------------------------------------"
 echo "Extract mydir from mydir.ad"
 echo "adtar -x mydir.ad"
-./adtar -x mydir.ad  
+./adtar -x mydir.ad
 
 echo "------------------------------------------------------------"
 echo "After the extraction Compare the file permission, gid/owner id, file size, file name"
