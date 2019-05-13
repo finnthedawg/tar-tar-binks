@@ -26,6 +26,6 @@ int store_archive(std::vector<std::string> inputList, std::fstream &archivePtr,
 	write_metadata_to_disk(mainHeader, archivePtr, metaVector);
 
     if (DEBUG) std::cout << "REMOVE LATER PRINTING OUT META INFORMATION FOR TESTING" << '\n';
-    display_metadata_from_archive (metaVector, "NAN", true);
+    display_metadata_from_archive (metaVector, inputList[0], true);
 	return 0;
 }

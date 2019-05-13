@@ -113,7 +113,7 @@ int main(int argc, char *argv[]) {
 		if (DEBUG) std::cout << "DEBUG -m flag" << '\n';
 		/* If no files are specified then print out Metadata of all files in archive */
 		if (argc == 3) {
-			display_metadata_from_archive(metaVector, "NAN", true);
+			display_metadata_from_archive(metaVector, inputList[0], true); // the inputList[0] passed here is bogus
 		}
 		else {
 			// files must be specified with full path i.e. dir1/dir2/dir3/file1.txt not just file1.txt
