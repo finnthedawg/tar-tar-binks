@@ -45,14 +45,6 @@ int main(int argc, char *argv[]) {
 		return -1;
 	}
 
-	std::fstream archivePtr;
-	archivePtr.imbue(std::locale::classic());
-	archivePtr.open(archiveName, std::ios::in |
-	                std::ios::out | std::ios::app | std::ios::binary ); // open archiveName with rd, wrt and append perm
-	if ( !(archivePtr.is_open()) ) {
-		std::cerr << "ERROR: cannot open "<< archiveName << std::endl;
-		return -1;
-	}
 	/* remove the archive file if it alreday exits for the -c create flag */
 	if (flag[1] == 'c') {
 		const int result = remove(archiveName.c_str());
@@ -63,11 +55,23 @@ int main(int argc, char *argv[]) {
 				std::cout << "DEBUG" << archiveName << "does not exist. No need to remove" << std::endl;
 			}
 		}
-		mainHeader.offsetToMeta = sizeof(mainHeader); // set the offsetToMeta to size of mainHeader
-	} else { //If not creating archive, parse the information
+		mainHeader.offsetToMeta = sizeof(mainHeader); // set the offsetToMeta to size of mainHeader only for -c flag
+	}
+
+	std::fstream archivePtr;
+	archivePtr.imbue(std::locale::classic());
+	archivePtr.open(archiveName, std::ios::in |
+	                std::ios::out | std::ios::app | std::ios::binary ); // open archiveName with rd, wrt and append perm
+	if ( !(archivePtr.is_open()) ) {
+		std::cerr << "ERROR: cannot open "<< archiveName << std::endl;
+		return -1;
+	}
+
+	/* If any other flag than the -c create flag is used. We must read the Metadata from the archive first */
+	if (flag[1] != 'c') { //If not creating archive, parse the information
 		if (file_size(archivePtr) <= sizeof(mainHeader)) {
 			std::cerr << "Empty archive\n";
-			exit(0);
+			exit(-1);
 		}
 		/* Read the header information */
 		archivePtr.read(reinterpret_cast<char*>(&mainHeader),sizeof(mainHeader));
@@ -83,15 +87,11 @@ int main(int argc, char *argv[]) {
 	case 'c': // -c store flag
 	{
 		if (DEBUG) std::cout << "DEBUG -c flag used" << '\n';
-		if (file_size(archivePtr) != 0) {
-			std::cerr << "Archive already exists, please use the append or extract flags\n";
-			exit(0);
-		}
 		archivePtr.write(reinterpret_cast<char*>(&mainHeader),sizeof(mainHeader)); //Initialize the header in archive.
 		store_archive(inputList, archivePtr, mainHeader, metaVector);
 		break;
 	}
-	case 'a': // -a append flag
+	case 'a': // -a append flag TODO
 		if (DEBUG) std::cout << "DEBUG -a flag used" << '\n';
 		// iterating through the inputList vector to append all the stated files
 		for(std::vector<int>::size_type i = 0; i != inputList.size(); i++) {
@@ -100,7 +100,7 @@ int main(int argc, char *argv[]) {
 			// run the append function for each file/dir in the inputList
 		}
 		break;
-	case 'x': // -x extract flag with/without -o version flag
+	case 'x': // -x extract flag with/without -o version flag TODO
 		if (DEBUG) std::cout << "DEBUG -x flag used" << '\n';
 		// iterating through the inputList vector to extract all the stated files/ non-empty dirs
 		for(std::vector<int>::size_type i = 0; i != inputList.size(); i++) {
@@ -109,7 +109,7 @@ int main(int argc, char *argv[]) {
 			// run the extract function for each file/dir in the inputList
 		}
 		break;
-	case 'm': // -m print metatdata flag
+	case 'm': // -m print metatdata flag TODO
 		// TODO print out meta data
 		if (DEBUG) std::cout << "DEBUG -m flag" << '\n';
 
@@ -125,7 +125,7 @@ int main(int argc, char *argv[]) {
 			// run the extract function for each file/dir in the inputList
 		}
 		break;
-	case 'p': // -p print directory hierarchy flag
+	case 'p': // -p print directory hierarchy flag TODO
 		// TODO
 		// print the directory hierarchy
 		if (DEBUG) std::cout << "DEBUG -p flag." << '\n';
