@@ -33,8 +33,10 @@ int display_metadata_from_archive (std::vector <struct Metadata> &metaVector, st
 
 /* display all attributes on Metadata object */
 void display_one_metadata_attrb (struct Metadata &metadata_object) {
-	if (metadata_object.file) std::cout << "Class: File" << '\n';
-	if (metadata_object.directory) std::cout << "Class: Directory" << '\n';
+	if (metadata_object.file) std::cout << "Type: File" << '\n';
+	if (metadata_object.directory) std::cout << "Type: Directory" << '\n';
+	if (metadata_object.softlink) std::cout << "Type: Softlink" << '\n';
+
 	std::cout << "  " << "name: " << metadata_object.fileName << std::endl;
 	std::cout << "  " << "path to object: " << metadata_object.pathToObject << std::endl;
 	std::cout << "  " << "inode: " << metadata_object.inode << std::endl;
@@ -42,8 +44,11 @@ void display_one_metadata_attrb (struct Metadata &metadata_object) {
 	std::cout << "  " << "permission " << mode_to_permission(metadata_object.filePermission) << std::endl;
 	// std::cout << "  " << "permission " << metadata_object.filePermission << std::endl;
 
-	std::cout << "  " << "uid: " << metadata_object.userID << std::endl;
-	std::cout << "  " << "gid: " << metadata_object.groupID << std::endl;
+	std::cout << "  " << "uid: " << get_user_name(metadata_object.userID) << std::endl;
+	std::cout << "  " << "gid: " << get_group_name(metadata_object.groupID) << std::endl;
+	// std::cout << "  " << "uid: " << metadata_object.userID << std::endl;
+	// std::cout << "  " << "gid: " << metadata_object.groupID << std::endl;
+
 	std::cout << "  " << "version: " << metadata_object.version << std::endl;
 	std::cout << "  " << "size: " << metadata_object.fileSize << std::endl;
 
@@ -51,10 +56,10 @@ void display_one_metadata_attrb (struct Metadata &metadata_object) {
 	std::cout << "  " << "access time: " << unix_time_to_date(metadata_object.accessDate) << std::endl;
 	std::cout << "  " << "modify time: " << unix_time_to_date(metadata_object.modifyDate) << std::endl;
 	std::cout << "  " << "change time: " << unix_time_to_date(metadata_object.changeDate) << std::endl;
-
 	// std::cout << "  " << "birthtime: " << metadata_object.birthDate << std::endl;
 	// std::cout << "  " << "accesstime: " << metadata_object.accessDate << std::endl;
 	// std::cout << "  " << "modifytime: " << metadata_object.modifyDate << std::endl;
 	// std::cout << "  " << "changetime: " << metadata_object.changeDate << std::endl;
+
 	std::cout << "  " << "number of links: " << metadata_object.numberOfLinks << std::endl;
 }
