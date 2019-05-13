@@ -50,9 +50,9 @@ int main(int argc, char *argv[]) {
 		const int result = remove(archiveName.c_str());
 		if (DEBUG) {
 			if( result == 0 ) {
-				std::cout << "DEBUG" << archiveName << "existed and was removed" << std::endl;
+				std::cout << "DEBUG " << archiveName << " existed and was removed" << std::endl;
 			} else {
-				std::cout << "DEBUG" << archiveName << "does not exist. No need to remove" << std::endl;
+				std::cout << "DEBUG " << archiveName << " does not exist. No need to remove" << std::endl;
 			}
 		}
 		mainHeader.offsetToMeta = sizeof(mainHeader); // set the offsetToMeta to size of mainHeader only for -c flag
@@ -80,7 +80,7 @@ int main(int argc, char *argv[]) {
 	}
 
 	if (DEBUG) std::cout << "DEBUG TARTAR WILL NOW COMMENCE\n" \
-		                 << "Archive Name is " <<archiveName << ". Version is "<< version << std::endl;
+		                 << "DEBUG Archive Name is " <<archiveName << ". Version is "<< version << std::endl;
 
 	// Check the flag type and run the appropriate command
 	switch (flag[1]) {
