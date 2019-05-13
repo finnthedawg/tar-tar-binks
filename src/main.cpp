@@ -65,7 +65,6 @@ int main(int argc, char *argv[]) {
 		std::cerr << "ERROR: cannot open "<< archiveName << std::endl;
 		return -1;
 	}
-  // archivePtr.write("0000000000000000", sizeof(mainHeader));
 	mainHeader.offsetToMeta = sizeof(mainHeader);           // set the offsetToMeta to size of mainHeader
 
 	if (DEBUG) std::cout << "DEBUG TARTAR WILL NOW COMMENCE\n" \
@@ -76,6 +75,10 @@ int main(int argc, char *argv[]) {
 	case 'c': // -c store flag
 	{
 		if (DEBUG) std::cout << "DEBUG -c flag used" << '\n';
+    if (file_size(archivePtr) != 0){
+      std::cerr << "Archive already exists, please use the append or extract flags\n";
+    }
+    archivePtr.write(reinterpret_cast<char*>(&mainHeader),sizeof(mainHeader)); //Initialize the header in archive.
 		store_archive(inputList, archivePtr, mainHeader, metaVector);
 		break;
 	}
@@ -94,7 +97,6 @@ int main(int argc, char *argv[]) {
 		// iterating through the inputList vector to extract all the stated files/ non-empty dirs
 		for(std::vector<int>::size_type i = 0; i != inputList.size(); i++) {
 			if (DEBUG) std::cout << "DEBUG " << inputList[i] << std::endl;
-
 			// TODO
 			// run the extract function for each file/dir in the inputList
 		}
