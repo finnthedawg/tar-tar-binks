@@ -1,11 +1,16 @@
+#include <pwd.h>
+#include <grp.h>
 #include <cstdio>
 #include <vector>
 #include <string>
 #include <fstream>
 #include <stdio.h>
 #include <iostream>
+#include <unistd.h>
 #include <dirent.h>
 #include <sys/stat.h>
+#include <sys/types.h>
+#include <uuid/uuid.h>
 #include "common.h"
 
 /* Recursive iteration through directories in disk and add the information about the file/directory to
@@ -22,7 +27,7 @@ void iterate_through_dir(std::string &baseDirName,
 	/* if there is an error in opening the dir stream */
 	dirPtr = opendir(baseDirName.c_str());
 	if (dirPtr == nullptr) {
-		std::cerr << "ERROR <" << errno <<  "> Unable to open " << baseDirName << std::endl;
+		std::cerr << "ERROR <" << strerror(errno) <<  "> Unable to open " << baseDirName << std::endl;
 	}
 	else {
 		if (DEBUG) std::cout << "DEBUG " << "Opening " << baseDirName << std::endl;
@@ -31,23 +36,35 @@ void iterate_through_dir(std::string &baseDirName,
 
 		while (dirReadPointer) {
 			std::string fileName = dirReadPointer->d_name;
+			std::cout << "FILENNAME !!!!!!!!!!!    " << fileName << '\n';
 			/* excluding current dir and parent directory specifier . and .. along with DS_Store */
 			if ( fileName != std::string(".") && fileName != std::string("..") &&
 			     fileName != std::string(".DS_Store") ) {
 
 				std::string pathToObject = baseDirName+"/"+fileName;
-				if (dirReadPointer->d_type == DT_REG) {      // if dirReadPointer is a file
-					mainHeader.fileCount++;
 
-					if (DEBUG) std::cout << "DEBUG: name of file=" << fileName << std::endl;
+				switch(dirReadPointer->d_type) {
+				case DT_REG:// if dirReadPointer is a file
+					mainHeader.fileCount++;
+					if (DEBUG) std::cout << "DEBUG: name of file = " << fileName << std::endl;
 					append_to_metadata(fileName, pathToObject, metaVector, mainHeader, archivePtr, flag);
-				}
-				else if (dirReadPointer->d_type == DT_DIR) { // if dirReadPointer is a directory
+					break;
+				case DT_LNK:// if dirReadPointer is a symbolic link
+					mainHeader.symboliclinkCount++;
+					if (DEBUG) std::cout << "DEBUG: name of symbolic link = " << fileName << std::endl;
+					append_to_metadata(fileName, pathToObject, metaVector, mainHeader, archivePtr, flag);
+					break;
+				case DT_DIR:// if dirReadPointer is a directory
 					mainHeader.directoryCount++;
-					if (DEBUG) std::cout << "DEBUG: name of directory=" << fileName<< std::endl;
-					// TODO
+					if (DEBUG) std::cout << "DEBUG: name of directory = " << fileName<< std::endl;
 					update_metadata_in_memory(mainHeader, fileName, pathToObject, metaVector, archivePtr, flag);
 					iterate_through_dir(pathToObject, archivePtr, mainHeader, metaVector, flag);
+					break;
+				default: // other file types sockets or pipes
+					mainHeader.otherFileCount++;
+					if (DEBUG) std::cout << "DEBUG: name of other file = " << fileName << std::endl;
+					append_to_metadata(fileName, pathToObject, metaVector, mainHeader, archivePtr, flag);
+					break;
 				}
 			}
 			dirReadPointer = readdir(dirPtr);
@@ -174,14 +191,21 @@ struct Metadata create_Metadata_object(struct Header &mainHeader,
 		currentMeta.directory = 1;
 		currentMeta.file = 0;
 		currentMeta.offsetToFileStart = -1; // -1 for directories
+		currentMeta.softlink = 0;
 	}
-	// TODO TODO TODO TODO TODO TODO TODO TODO TODO
-	// additional checks for symbolic links, sockets, pipes or devices
-	// then it is a file
+	// additional checks for symbolic links
+	else if (S_ISLNK(fileStat.st_mode)) {
+		currentMeta.directory = 0;
+		currentMeta.file = 0;
+		currentMeta.offsetToFileStart = -1; // -1 for softlinks
+		currentMeta.softlink = 1;
+	}
+	// then it is a file (Maybe not a regular file)
 	else {
 		currentMeta.file = 1;
 		currentMeta.directory = 0;
 		currentMeta.offsetToFileStart = mainHeader.offsetToMeta;
+		currentMeta.softlink = 0;
 	}
 	// As sizeof(string) = size of pointer to string, we have to use string.length()
 	currentMeta.version = 1; // Can be updated when the -a flag is used
@@ -291,7 +315,7 @@ int append_file_to_disk(std::fstream &archivePtr,
 			archivePtr.put(buffer);
 			// Update the offsetToMeta offset
 			mainHeader.offsetToMeta += sizeof(buffer);
-			std::cout << "APtr = " << archivePtr.tellg() << '\n';
+			// std::cout << "APtr = " << archivePtr.tellg() << '\n';
 		}
 		readFile.close();
 	}
@@ -324,12 +348,13 @@ char * unix_time_to_date (time_t unixTime) {
 /* converting mode_t to a permission string in format -rwxrwxrwx*/
 char * mode_to_permission (mode_t fileMode) {
 	static char convertedFilePermission[11];
-    if (S_ISLNK(fileMode)) { // checking if the object is a symbolic link
-        convertedFilePermission[0] = 'l';
-    }
-    else {
-        convertedFilePermission[0] = ((S_ISDIR(fileMode)) ? 'd' : '-');
-    }
+	if (S_ISLNK(fileMode)) { // checking if the object is a symbolic link
+		convertedFilePermission[0] = 'l';
+	}
+	else {
+		// set convertedFilePermission[0] to 'd' if directory
+		convertedFilePermission[0] = ((S_ISDIR(fileMode)) ? 'd' : '-');
+	}
 	convertedFilePermission[1] = (fileMode & S_IRUSR) ? 'r' : '-';
 	convertedFilePermission[2] = (fileMode & S_IWUSR) ? 'w' : '-';
 	convertedFilePermission[3] = (fileMode & S_IXUSR) ? 'x' : '-';
@@ -339,6 +364,36 @@ char * mode_to_permission (mode_t fileMode) {
 	convertedFilePermission[7] = (fileMode & S_IROTH) ? 'r' : '-';
 	convertedFilePermission[8] = (fileMode & S_IWOTH) ? 'w' : '-';
 	convertedFilePermission[9] = (fileMode & S_IXOTH) ? 'x' : '-';
-    convertedFilePermission[10] = '\0';
-    return convertedFilePermission;
+	convertedFilePermission[10] = '\0';
+	return convertedFilePermission;
+}
+
+/* converts uid to user name */
+std::string get_user_name (uid_t uid) {
+	struct passwd *pswrd;
+	pswrd = getpwuid(uid);
+	return pswrd->pw_name;
+}
+
+/* convertes gid to group id */
+std::string get_group_name (uid_t gid) {
+	struct group *grp;
+	grp = getgrgid(gid);
+	return grp->gr_name;
+}
+
+/*  Extracts file name from pathToObject
+    Utility code from
+   C++ Cookbook by Jeff Cogswell, Jonathan Turkanis, Christopher Diggins, D. Ryan Stephens */
+std::string get_filename_from_path(std::string &pathToObject) {
+	char sep = '/';
+	#ifdef _WIN32 // for windows
+	sep = '\\';
+	#endif
+
+	size_t i = pathToObject.rfind(sep, pathToObject.length());
+	if (i != std::string::npos) {
+		return(pathToObject.substr(i+1, pathToObject.length() - i));
+	}
+	return(pathToObject); // if no / or \\ were found, return original name
 }
