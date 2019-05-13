@@ -141,7 +141,7 @@ struct Metadata create_Metadata_object(struct Header &mainHeader,
 	std::string userID, groupID, mode,
 	            size, accessDate, modifyDate,
 	            changeDate, birthDate, inode;
-	int numHardLinks;
+	nlink_t numLinks;
 
 	userID = std::to_string(fileStat.st_uid);
 	groupID = std::to_string(fileStat.st_gid);
@@ -152,7 +152,7 @@ struct Metadata create_Metadata_object(struct Header &mainHeader,
 	changeDate = std::to_string(fileStat.st_ctime);
 	birthDate = std::to_string(fileStat.st_birthtime);
 	inode = std::to_string(fileStat.st_ino);
-	numHardLinks = (int)fileStat.st_nlink;
+	numLinks = fileStat.st_nlink;
 
 	if (DEBUG) {
 		std::cout << "File name: " << pathToObject << std::endl;
@@ -160,7 +160,7 @@ struct Metadata create_Metadata_object(struct Header &mainHeader,
 		std::cout << "Group ID: " << fileStat.st_gid << std::endl;
 		std::cout << "Mode: " << fileStat.st_mode << std::endl;
 		std::cout << "Size: " << fileStat.st_size << std::endl;
-		std::cout << "Number of hard links to the file: " << fileStat.st_nlink << std::endl;
+		std::cout << "Number of links to the object: " << fileStat.st_nlink << std::endl;
 		std::cout << "Inode number: " << fileStat.st_ino << std::endl;
 		std::cout << "Last access date: " << fileStat.st_atime << std::endl;
 		std::cout << "Last modification date: " << fileStat.st_mtime << std::endl;
@@ -185,28 +185,42 @@ struct Metadata create_Metadata_object(struct Header &mainHeader,
 	}
 	// As sizeof(string) = size of pointer to string, we have to use string.length()
 	currentMeta.version = 1; // Can be updated when the -a flag is used
-	currentMeta.numberOfLinks = numHardLinks;
-	strncpy(currentMeta.inode, (inode+"\0").c_str(), inode.length()+1);
-	strncpy(currentMeta.fileSize, (size+"\0").c_str(), size.length()+1);
-	strncpy(currentMeta.userID, (userID+"\0").c_str(), userID.length()+1);
-	strncpy(currentMeta.groupID, (groupID+"\0").c_str(), groupID.length()+1);
-	strncpy(currentMeta.filePermission, (mode+"\0").c_str(), mode.length()+1);
-	strncpy(currentMeta.fileName, (fileName+"\0").c_str(), fileName.length()+1);
-	strncpy(currentMeta.birthDate, (birthDate+"\0").c_str(), birthDate.length()+1);
-	strncpy(currentMeta.accessDate, (accessDate+"\0").c_str(), accessDate.length()+1);
-	strncpy(currentMeta.modifyDate, (modifyDate+"\0").c_str(), modifyDate.length()+1);
-	strncpy(currentMeta.changeDate, (changeDate+"\0").c_str(), changeDate.length()+1);
-	strncpy(currentMeta.pathToObject, (pathToObject+"\0").c_str(), pathToObject.length()+1);
-	/*
-	   currentMeta.userID = (userID+"\0").c_str();
-	   currentMeta.groupID = (groupID+"\0").c_str();
-	   currentMeta.fileName = (fileName+"\0").c_str();
-	   currentMeta.birthDate = (birthDate+"\0").c_str();
-	   currentMeta.filePermission = (mode+"\0").c_str();
-	   currentMeta.accessDate = (accessDate+"\0").c_str();
-	   currentMeta.modifyDate = (modifyDate+"\0").c_str();
-	   currentMeta.changeDate = (changeDate+"\0").c_str();
-	   currentMeta.pathToObject = (pathToObject+"\0").c_str();
+	currentMeta.numberOfLinks = fileStat.st_nlink;
+	snprintf(currentMeta.pathToObject, sizeof(currentMeta.pathToObject), "%s",  (pathToObject).c_str());
+	snprintf(currentMeta.fileName, sizeof(currentMeta.fileName), "%s", (fileName).c_str());
+
+	currentMeta.inode = fileStat.st_ino;
+	currentMeta.fileSize = fileStat.st_size;
+	currentMeta.userID = fileStat.st_uid;
+	currentMeta.groupID = fileStat.st_gid;
+	currentMeta.filePermission = fileStat.st_mode;
+	currentMeta.birthDate = fileStat.st_birthtime;
+	currentMeta.accessDate = fileStat.st_atime;
+	currentMeta.modifyDate = fileStat.st_mtime;
+	currentMeta.changeDate = fileStat.st_ctime;
+	/* Security present for string copy
+	   snprintf(currentMeta.inode, sizeof(currentMeta.inode), "%s", (inode).c_str());
+	   snprintf(currentMeta.fileSize, sizeof(currentMeta.fileSize), "%s", (size).c_str());
+	   snprintf(currentMeta.userID, sizeof(currentMeta.userID), "%s", (userID).c_str());
+	   snprintf(currentMeta.groupID, sizeof(currentMeta.groupID), "%s", (groupID).c_str());
+	   snprintf(currentMeta.filePermission, sizeof(currentMeta.filePermission), "%s", (mode).c_str());
+	   snprintf(currentMeta.birthDate,  sizeof(currentMeta.birthDate), "%s", (birthDate).c_str());
+	   snprintf(currentMeta.accessDate, sizeof(currentMeta.accessDate), "%s", (accessDate).c_str());
+	   snprintf(currentMeta.modifyDate, sizeof(currentMeta.modifyDate), "%s", (modifyDate).c_str());
+	   snprintf(currentMeta.changeDate, sizeof(currentMeta.changeDate), "%s", (changeDate).c_str());
+	 */
+	/* Security not present for string copy
+	   strncpy(currentMeta.pathToObject, (pathToObject+"\0").c_str(), pathToObject.length()+1)
+	   strncpy(currentMeta.inode, (inode+"\0").c_str(), inode.length()+1);
+	   strncpy(currentMeta.fileSize, (size+"\0").c_str(), size.length()+1);
+	   strncpy(currentMeta.userID, (userID+"\0").c_str(), userID.length()+1);
+	   strncpy(currentMeta.groupID, (groupID+"\0").c_str(), groupID.length()+1);
+	   strncpy(currentMeta.filePermission, (mode+"\0").c_str(), mode.length()+1);
+	   strncpy(currentMeta.fileName, (fileName+"\0").c_str(), fileName.length()+1);
+	   strncpy(currentMeta.birthDate, (birthDate+"\0").c_str(), birthDate.length()+1);
+	   strncpy(currentMeta.accessDate, (accessDate+"\0").c_str(), accessDate.length()+1);
+	   strncpy(currentMeta.modifyDate, (modifyDate+"\0").c_str(), modifyDate.length()+1);
+	   strncpy(currentMeta.changeDate, (changeDate+"\0").c_str(), changeDate.length()+1);
 	 */
 	return currentMeta; // return the populated Metadata object
 }
@@ -297,4 +311,34 @@ int file_size(std::fstream &fstream_obj){
 	int length = fstream_obj.tellg();
 	fstream_obj.seekg(0, fstream_obj.beg);
 	return(length);
+}
+
+/* convert UNIX time format to date format */
+char * unix_time_to_date (time_t unixTime) {
+	struct tm *tm = localtime(&unixTime);
+	static char convertedDate[20];
+	strftime(convertedDate, sizeof(convertedDate), "%Y-%m-%d %H:%M", tm);
+	return (char *)convertedDate;
+}
+
+/* converting mode_t to a permission string in format -rwxrwxrwx*/
+char * mode_to_permission (mode_t fileMode) {
+	static char convertedFilePermission[11];
+    if (S_ISLNK(fileMode)) { // checking if the object is a symbolic link
+        convertedFilePermission[0] = 'l';
+    }
+    else {
+        convertedFilePermission[0] = ((S_ISDIR(fileMode)) ? 'd' : '-');
+    }
+	convertedFilePermission[1] = (fileMode & S_IRUSR) ? 'r' : '-';
+	convertedFilePermission[2] = (fileMode & S_IWUSR) ? 'w' : '-';
+	convertedFilePermission[3] = (fileMode & S_IXUSR) ? 'x' : '-';
+	convertedFilePermission[4] = (fileMode & S_IRGRP) ? 'r' : '-';
+	convertedFilePermission[5] = (fileMode & S_IWGRP) ? 'w' : '-';
+	convertedFilePermission[6] = (fileMode & S_IXGRP) ? 'x' : '-';
+	convertedFilePermission[7] = (fileMode & S_IROTH) ? 'r' : '-';
+	convertedFilePermission[8] = (fileMode & S_IWOTH) ? 'w' : '-';
+	convertedFilePermission[9] = (fileMode & S_IXOTH) ? 'x' : '-';
+    convertedFilePermission[10] = '\0';
+    return convertedFilePermission;
 }
