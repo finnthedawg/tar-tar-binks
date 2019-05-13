@@ -12,7 +12,7 @@
     the metadata vector and Immediately write to archive file on disk if its a file */
 
 // TODO Softlinks and Hardlinsk
-void iterate_through_dir(std::string baseDirName,
+void iterate_through_dir(std::string &baseDirName,
                          std::fstream &archivePtr,
                          struct Header &mainHeader,
                          std::vector <struct Metadata> &metaVector,
@@ -100,8 +100,8 @@ int write_header_to_disk(struct Header &mainHeader,
 
 // TODO TODO TODO TODO TODO TODO TODO
 /* Read Metadata from disk */
-std::vector <struct Metadata> read_metadata_from_disk(std::fstream archivePtr,
-                                                      struct Header mainHeader){
+std::vector <struct Metadata> read_metadata_from_disk(std::fstream &archivePtr,
+                                                      struct Header &mainHeader){
 	archivePtr.seekg(mainHeader.offsetToMeta);    // Seek to the offset of metadata Header.offsetToMeta
 	std::vector <struct Metadata> metaVector;
 	while (archivePtr.is_open()) {
@@ -130,8 +130,8 @@ int write_metadata_to_disk(struct Header &mainHeader,
 
 /* Create a new Metadata object */
 struct Metadata create_Metadata_object(struct Header &mainHeader,
-                                       std::string fileName,
-                                       std::string pathToObject) {
+                                       std::string &fileName,
+                                       std::string &pathToObject) {
 	// Getting the information about the file/directory
 	struct stat fileStat;
 	if (stat((pathToObject).c_str(), &fileStat) == -1) {
@@ -183,6 +183,7 @@ struct Metadata create_Metadata_object(struct Header &mainHeader,
 		currentMeta.directory = 0;
 		currentMeta.offsetToFileStart = mainHeader.offsetToMeta;
 	}
+    // TODO TODO TODO TODO Current implementation is incorrect, as sizeof(string) = size of pointer to string
 	currentMeta.version = 1; // Can be updated when the -a flag is used
 	currentMeta.numberOfLinks = numHardLinks;
 	strncpy(currentMeta.inode, (inode+"\0").c_str(), sizeof(inode)+1);
@@ -217,8 +218,8 @@ struct Metadata create_Metadata_object(struct Header &mainHeader,
    Push a new meta to vector if not found
    For flag = c, push to metaVector directly without checking for old versions */
 int update_metadata_in_memory( struct Header &mainHeader,
-                               std::string fileName,
-                               std::string pathToObject,
+                               std::string &fileName,
+                               std::string &pathToObject,
                                std::vector <struct Metadata> &metaVector,
                                std::fstream &archivePtr,
                                char flag) {
@@ -241,8 +242,8 @@ int update_metadata_in_memory( struct Header &mainHeader,
 
 /* Append to Metadata in memory and Add New Files to archive file on disk
    This function should only be called for files not directories */
-int append_to_metadata(std::string fileName,
-                       std::string pathToObject,
+int append_to_metadata(std::string &fileName,
+                       std::string &pathToObject,
                        std::vector <struct Metadata> &metaVector,
                        struct Header &mainHeader,
                        std::fstream &archivePtr,
@@ -263,7 +264,7 @@ int append_to_metadata(std::string fileName,
 /* Utility functions */
 /* Append/Write the file to the archive on disk for -c CREATE and -a APPEND flag */
 int append_file_to_disk(std::fstream &archivePtr,
-                        std::string pathToObject,
+                        std::string &pathToObject,
                         struct Header &mainHeader
                         ) {
 	/* appends file to current pffsetToMeta */
