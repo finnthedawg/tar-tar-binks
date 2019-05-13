@@ -54,9 +54,7 @@ void iterate_through_dir(std::string baseDirName,
 	}
 }
 
-// TODO IMPORTANT
-/* Read Header from disk */
-
+// /* Read Header from disk */
 // struct Header read_header_from_disk(std::fstream archivePtr) {
 //  // TODO read the size of long long to read the offsetToMeta
 //  // TODO read the size of int to read the number of files & folders
@@ -292,4 +290,12 @@ int append_file_to_disk(std::fstream &archivePtr,
 	}
   if (DEBUG==0) std::cout << "DEBUG   3 Current FILE writer ptr loc in archivePtr is " << archivePtr.tellp() << std::endl;
 	return 0;
+}
+
+/* gets file size of a fstream object */
+int file_size(std::fstream &fstream_obj){
+	fstream_obj.seekg(0, fstream_obj.end);
+	int length = fstream_obj.tellg();
+	fstream_obj.seekg(0, fstream_obj.beg);
+	return(length);
 }

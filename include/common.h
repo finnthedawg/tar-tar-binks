@@ -1,7 +1,7 @@
 #ifndef COMMON_H // Making sure the header files are not included twice
 #define COMMON_H
 
-#define DEBUG 0  // Debug MACRO 1 = print all debug msgs, 0 = Do not print debug messages
+#define DEBUG 1  // Debug MACRO 1 = print all debug msgs, 0 = Do not print debug messages
 
 /* struct for header */
 struct Header {
@@ -40,6 +40,8 @@ void iterate_through_dir(std::string baseDirName,
                          struct Header &mainHeader,
                          std::vector <struct Metadata> &metaVector,
                          char flag);
+
+/* Read the header from archive */
 
 /* Write header to disk */
 int write_header_to_disk(struct Header &mainHeader,
@@ -82,5 +84,8 @@ int append_file_to_disk(std::fstream &archivePtr,
 int write_metadata_to_disk(struct Header &mainHeader,
                           std::fstream &archivePtr,
                           std::vector <struct Metadata> &metaVector);
+
+/* gets file size of a fstream object */
+int file_size(std::fstream &fstream_obj);
 
 #endif
