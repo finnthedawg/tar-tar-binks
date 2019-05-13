@@ -39,7 +39,7 @@ int main(int argc, char *argv[]) {
 	std::vector<struct Metadata> metaVector; // vector of Metadata structs
 
 	/* Checking for valid cmd args */
-	if (chk_cmd_args(argc, argv, archiveName, inputList, flag, version) == false ) {
+	if (check_cmd_args(argc, argv, archiveName, inputList, flag, version) == false ) {
 		// incorrect args error exit
 		std::cerr << "Incorrect Usage: ./tartar -flag <archive-file> <file/directory list>" << std::endl;
 		return -1;
