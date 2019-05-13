@@ -66,28 +66,28 @@ void iterate_through_dir(std::string baseDirName,
 int write_header_to_disk(struct Header &mainHeader,
                          std::fstream &archivePtr) {
 	if (archivePtr.is_open()) {
-    if (DEBUG==0) std::cout << "DEBUG Current ptr loc in archivePtr is " << archivePtr.tellg() <<" "<< archivePtr.tellp() << std::endl;
+		if (DEBUG==0) std::cout << "DEBUG Current ptr loc in archivePtr is " << archivePtr.tellg() <<" "<< archivePtr.tellp() << std::endl;
 		archivePtr.clear();                 // clear the eof flag if it has been set for archivePtr
-    if (DEBUG==0) std::cout << "DEBUG Current ptr loc in archivePtr is " << archivePtr.tellg() <<" "<< archivePtr.tellp() << std::endl;
+		if (DEBUG==0) std::cout << "DEBUG Current ptr loc in archivePtr is " << archivePtr.tellg() <<" "<< archivePtr.tellp() << std::endl;
 		archivePtr.seekp(0, std::ios::beg); // reset the archivePtr to the start of the archive file
-    if (DEBUG==0) std::cout << "DEBUG Current ptr loc in archivePtr is " << archivePtr.tellg() <<" "<< archivePtr.tellp() << std::endl;
+		if (DEBUG==0) std::cout << "DEBUG Current ptr loc in archivePtr is " << archivePtr.tellg() <<" "<< archivePtr.tellp() << std::endl;
 		int mainHeaderSize = sizeof(mainHeader);
-    std::cout << mainHeader.offsetToMeta << " " << mainHeader.fileCount << " " << mainHeader.directoryCount << std::endl;
+		std::cout << mainHeader.offsetToMeta << " " << mainHeader.fileCount << " " << mainHeader.directoryCount << std::endl;
 
-    // fwrite(&mainHeader, sizeof(Header), 1, archivePtr);
-    if (DEBUG==0) std::cout << "DEBUG Current ptr loc in archivePtr is " << archivePtr.tellg() <<" "<< archivePtr.tellp() << std::endl;
-    archivePtr.seekp(0, std::fstream::beg);
-    archivePtr.write((char *)"1234567891234567", mainHeaderSize);
-    // archivePtr.write((char *)(&mainHeader), mainHeaderSize);
+		// fwrite(&mainHeader, sizeof(Header), 1, archivePtr);
+		if (DEBUG==0) std::cout << "DEBUG Current ptr loc in archivePtr is " << archivePtr.tellg() <<" "<< archivePtr.tellp() << std::endl;
+		archivePtr.seekp(0, std::fstream::beg);
+		archivePtr.write((char *)"1234567891234567", mainHeaderSize);
+		// archivePtr.write((char *)(&mainHeader), mainHeaderSize);
 
-    if (DEBUG==0) std::cout << "DEBUG Current ptr loc in archivePtr is " << archivePtr.tellg() <<" "<< archivePtr.tellp() << std::endl;
-    std::cout << "main hdr size is " << mainHeaderSize << '\n';
-    if (DEBUG==0) std::cout << "DEBUG Current ptr loc in archivePtr is " << archivePtr.tellg() <<" "<< archivePtr.tellp() << std::endl;
-    std::cout << "Printing " << (char*)&mainHeader << std::endl;
-    archivePtr.seekp(0, std::fstream::beg);
-    // archivePtr.write((mainHeader.offsetToMeta), sizeof(mainHeader.offsetToMeta));
-    // archivePtr.write((mainHeader.fileCount), sizeof(mainHeader.fileCount));
-    // archivePtr.write((mainHeader.directoryCount), sizeof(main.directoryCount));
+		if (DEBUG==0) std::cout << "DEBUG Current ptr loc in archivePtr is " << archivePtr.tellg() <<" "<< archivePtr.tellp() << std::endl;
+		std::cout << "main hdr size is " << mainHeaderSize << '\n';
+		if (DEBUG==0) std::cout << "DEBUG Current ptr loc in archivePtr is " << archivePtr.tellg() <<" "<< archivePtr.tellp() << std::endl;
+		std::cout << "Printing " << (char*)&mainHeader << std::endl;
+		archivePtr.seekp(0, std::fstream::beg);
+		// archivePtr.write((mainHeader.offsetToMeta), sizeof(mainHeader.offsetToMeta));
+		// archivePtr.write((mainHeader.fileCount), sizeof(mainHeader.fileCount));
+		// archivePtr.write((mainHeader.directoryCount), sizeof(main.directoryCount));
 	}
 	else {
 		std::cerr << "Failed to open archive file for writing header info" << std::endl;
@@ -100,30 +100,30 @@ int write_header_to_disk(struct Header &mainHeader,
 /* Read Metadata from disk */
 std::vector <struct Metadata> read_metadata_from_disk(std::fstream archivePtr,
                                                       struct Header mainHeader){
-       archivePtr.seekg(mainHeader.offsetToMeta); // Seek to the offset of metadata Header.offsetToMeta
-       std::vector <struct Metadata> metaVector;
-       while (archivePtr.is_open()) {
-         struct Metadata meta;
-         archivePtr.read((char *)&meta, sizeof(Metadata));
-         metaVector.push_back(meta);
-       }
-       return metaVector;
+	archivePtr.seekg(mainHeader.offsetToMeta);    // Seek to the offset of metadata Header.offsetToMeta
+	std::vector <struct Metadata> metaVector;
+	while (archivePtr.is_open()) {
+		struct Metadata meta;
+		archivePtr.read((char *)&meta, sizeof(Metadata));
+		metaVector.push_back(meta);
+	}
+	return metaVector;
 }
 
 //  TODO TODO TODO TODO TODO TODO
 /* Write Metadata to disk */
 /* Call this function at the very end */
 int write_metadata_to_disk(struct Header &mainHeader,
-                          std::fstream &archivePtr,
-                          std::vector <struct Metadata> &metaVector){
-    archivePtr.seekp(mainHeader.offsetToMeta);
-    // TODO for each meta
-    for(std::vector<int>::size_type i = 0; i != metaVector.size(); i++) {
-        // TODO write to mainHeader.offsetToMeta
-        int MetadataSize = sizeof(Metadata);
-        archivePtr.write((char *)(&metaVector[i]), MetadataSize);
-    }
-    return 0;
+                           std::fstream &archivePtr,
+                           std::vector <struct Metadata> &metaVector){
+	archivePtr.seekp(mainHeader.offsetToMeta);
+	// TODO for each meta
+	for(std::vector<int>::size_type i = 0; i != metaVector.size(); i++) {
+		// TODO write to mainHeader.offsetToMeta
+		int MetadataSize = sizeof(Metadata);
+		archivePtr.write((char *)(&metaVector[i]), MetadataSize);
+	}
+	return 0;
 }
 
 /* Create a new Metadata object */
@@ -171,7 +171,7 @@ struct Metadata create_Metadata_object(struct Header &mainHeader,
 	if (S_ISDIR(fileStat.st_mode)) {
 		currentMeta.directory = 1;
 		currentMeta.file = 0;
-    currentMeta.offsetToFileStart = -1; // -1 for directories
+		currentMeta.offsetToFileStart = -1; // -1 for directories
 	}
 	// TODO TODO TODO TODO TODO TODO TODO TODO TODO
 	// additional checks for symbolic links, sockets, pipes or devices
@@ -179,7 +179,7 @@ struct Metadata create_Metadata_object(struct Header &mainHeader,
 	else {
 		currentMeta.file = 1;
 		currentMeta.directory = 0;
-    currentMeta.offsetToFileStart = mainHeader.offsetToMeta;
+		currentMeta.offsetToFileStart = mainHeader.offsetToMeta;
 	}
 	currentMeta.version = 1; // Can be updated when the -a flag is used
 	currentMeta.numberOfLinks = numHardLinks;
@@ -267,18 +267,18 @@ int append_file_to_disk(std::fstream &archivePtr,
 	char buffer;             // buffer for reading from pathToObject and writing to readFile
 
 	readFile.open(pathToObject, std::ios::binary);
-  if (DEBUG==0) std::cout << "DEBUG 1 Current FILE writer ptr loc in archivePtr is " << archivePtr.tellp() << std::endl;
-  archivePtr.clear();
+	if (DEBUG==0) std::cout << "DEBUG 1 Current FILE writer ptr loc in archivePtr is " << archivePtr.tellp() << std::endl;
+	archivePtr.clear();
 	archivePtr.seekp(mainHeader.offsetToMeta); // set pointer to the start of the offsetToMeta
-  if (DEBUG==0) std::cout << "DEBUG  2 Current FILE writer ptr loc in archivePtr is " << archivePtr.tellp() << std::endl;
+	if (DEBUG==0) std::cout << "DEBUG  2 Current FILE writer ptr loc in archivePtr is " << archivePtr.tellp() << std::endl;
 
-  if (readFile.is_open()) {
+	if (readFile.is_open()) {
 		while (!readFile.eof()) {
 			buffer = (char) readFile.get();
 			archivePtr.put(buffer);
 			// Update the offsetToMeta offset
 			mainHeader.offsetToMeta += sizeof(buffer);
-      std::cout << "APtr = " << archivePtr.tellg() << '\n';
+			std::cout << "APtr = " << archivePtr.tellg() << '\n';
 		}
 		readFile.close();
 	}
@@ -288,7 +288,7 @@ int append_file_to_disk(std::fstream &archivePtr,
 		          << pathToObject << " for writing." << std::endl;
 		return -1;
 	}
-  if (DEBUG==0) std::cout << "DEBUG   3 Current FILE writer ptr loc in archivePtr is " << archivePtr.tellp() << std::endl;
+	if (DEBUG==0) std::cout << "DEBUG   3 Current FILE writer ptr loc in archivePtr is " << archivePtr.tellp() << std::endl;
 	return 0;
 }
 

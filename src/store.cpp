@@ -15,13 +15,13 @@ int store_archive(std::vector<std::string> inputList, std::fstream &archivePtr,
 
 
 	// iterating through the inputList vector to get all the files/dirs to archive
-    // iterate_through_dir write the contents of all files that have been found
-    // starting from the mainHeader.offsetToMeta
+	// iterate_through_dir write the contents of all files that have been found
+	// starting from the mainHeader.offsetToMeta
 	for(std::vector<int>::size_type i = 0; i != inputList.size(); i++) {
 		if (DEBUG) std::cout << "DEBUG " << inputList[i] << std::endl;
 		iterate_through_dir(inputList[i], archivePtr, mainHeader, metaVector, 'c');
 	}
 	write_header_to_disk(mainHeader, archivePtr);
-  write_metadata_to_disk(mainHeader, archivePtr, metaVector);
+	write_metadata_to_disk(mainHeader, archivePtr, metaVector);
 	return -1;
 }

@@ -16,7 +16,7 @@ struct Metadata {
 	int directory;                // 1 if metadata refers to a folder otherwise 0
 	char pathToObject[FILENAME_MAX];
 	int version;                  // version of file/directory
-	long offsetToFileStart;				// offset to START of file metadata refers to. Value et to -1 for directories
+	long offsetToFileStart;             // offset to START of file metadata refers to. Value et to -1 for directories
 	/* file information stored in inode */
 	char fileName[FILENAME_MAX];
 	char userID[20];
@@ -58,7 +58,7 @@ struct Metadata create_Metadata_object(struct Header &mainHeader,
    Push a new meta to vector if not found
    For flag = c, push to metaVector directly without checking for old versions */
 int update_metadata_in_memory( struct Header &mainHeader,
-															 std::string fileName,
+                               std::string fileName,
                                std::string pathToObject,
                                std::vector <struct Metadata> &metaVector,
                                std::fstream &archivePtr,
@@ -82,8 +82,8 @@ int append_file_to_disk(std::fstream &archivePtr,
 /* Write Metadata to disk */
 /* Call this function at the very end */
 int write_metadata_to_disk(struct Header &mainHeader,
-                          std::fstream &archivePtr,
-                          std::vector <struct Metadata> &metaVector);
+                           std::fstream &archivePtr,
+                           std::vector <struct Metadata> &metaVector);
 
 /* gets file size of a fstream object */
 int file_size(std::fstream &fstream_obj);
