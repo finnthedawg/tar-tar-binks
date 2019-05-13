@@ -263,8 +263,15 @@ int update_metadata_in_memory( struct Header &mainHeader,
 	/* if flag is 'a' then search through the Global Metadata Struct to update the version
 	   if not found, push to vector */
 	if (flag == 'a') {
-		/*TODO TODO TODO TODO TODO*/
-		;
+        // IMPORTANT MORE CHECKS REQUIRED HERE
+        for(std::vector<int>::size_type i = 0; i != metaVector.size(); i++) {
+            /* if an older version of the file has been found, add a new version of object to metadata */
+            if ((std::string)(metaVector[i].pathToObject) == pathToObject) {
+                currentMeta.version += 1; // increment the version number
+                metaVector.push_back(currentMeta);
+                break;
+            }
+        }
 	}
 	/* if flag is 'c' add to vector directly */
 	else if (flag == 'c') {
