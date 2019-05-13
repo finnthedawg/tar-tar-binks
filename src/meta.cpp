@@ -8,7 +8,7 @@
 #include "common.h"
 
 /* Implementation for -m flag*/
-int display_metadata_from_archive (std::vector <struct Metadata> &metaVector, std::string &pathToObject, bool displayAll ) {
+int display_metadata_from_archive (std::vector <struct Metadata> &metaVector, std::string &pathToObject, bool displayAll) {
 	/* If we want to display metadata of all objects */
 	if (displayAll) {
 		std::cout << "Printing the metadata of all objects from the archive" << '\n';
