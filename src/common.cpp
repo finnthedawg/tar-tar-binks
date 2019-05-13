@@ -18,7 +18,6 @@ void iterate_through_dir(std::string baseDirName,
                          std::vector <struct Metadata> &metaVector,
                          char flag) {
 	DIR* dirPtr;                   // for opening a directory stream
-	struct dirent *dirReadPointer; // pointer for reading the DIR stream
 
 	/* if there is an error in opening the dir stream */
 	dirPtr = opendir(baseDirName.c_str());
@@ -27,24 +26,27 @@ void iterate_through_dir(std::string baseDirName,
 	}
 	else {
 		if (DEBUG) std::cout << "DEBUG " << "Opening " << baseDirName << std::endl;
+		struct dirent *dirReadPointer; // pointer for reading the DIR stream
 		dirReadPointer = readdir(dirPtr);
 
 		while (dirReadPointer) {
+			std::string fileName = dirReadPointer->d_name;
 			/* excluding current dir and parent directory specifier . and .. along with DS_Store */
-			if ( dirReadPointer->d_name != std::string(".") && dirReadPointer->d_name != std::string("..") &&
-			     dirReadPointer->d_name != std::string(".DS_Store") ) {
+			if ( fileName != std::string(".") && fileName != std::string("..") &&
+			     fileName != std::string(".DS_Store") ) {
 
-				std::string pathToObject = baseDirName+"/"+dirReadPointer->d_name;
+				std::string pathToObject = baseDirName+"/"+fileName;
 				if (dirReadPointer->d_type == DT_REG) {      // if dirReadPointer is a file
 					mainHeader.fileCount++;
-					if (DEBUG) std::cout << "DEBUG: name of file=" << dirReadPointer->d_name << std::endl;
-					append_to_metadata(dirReadPointer->d_name, pathToObject, metaVector, mainHeader, archivePtr, flag);
+
+					if (DEBUG) std::cout << "DEBUG: name of file=" << fileName << std::endl;
+					append_to_metadata(fileName, pathToObject, metaVector, mainHeader, archivePtr, flag);
 				}
 				else if (dirReadPointer->d_type == DT_DIR) { // if dirReadPointer is a directory
 					mainHeader.directoryCount++;
-					if (DEBUG) std::cout << "DEBUG: name of directory=" << dirReadPointer->d_name << std::endl;
+					if (DEBUG) std::cout << "DEBUG: name of directory=" << fileName<< std::endl;
 					// TODO
-					update_metadata_in_memory(mainHeader, dirReadPointer->d_name, pathToObject, metaVector, archivePtr, flag);
+					update_metadata_in_memory(mainHeader, fileName, pathToObject, metaVector, archivePtr, flag);
 					iterate_through_dir(pathToObject, archivePtr, mainHeader, metaVector, flag);
 				}
 			}
@@ -245,6 +247,8 @@ int append_to_metadata(std::string fileName,
                        struct Header &mainHeader,
                        std::fstream &archivePtr,
                        char flag){
+	if (DEBUG) std::cout << "Filename and size is " << fileName << "  size: " << sizeof(fileName) << '\n';
+	if (DEBUG) std::cout << "Path to object name is" << pathToObject << " size: " << sizeof(pathToObject) <<  '\n';
 	/* Search through global metadata Struct to update version.
 	   Push to vector if not found
 	   if -c flag is used, (i.e. char flag='c'), do not check for version,
@@ -264,15 +268,15 @@ int append_file_to_disk(std::fstream &archivePtr,
                         ) {
 	/* appends file to current pffsetToMeta */
 	std::ifstream readFile;  // open a input file stream
-	char buffer;             // buffer for reading from pathToObject and writing to readFile
 
 	readFile.open(pathToObject, std::ios::binary);
 	if (DEBUG==0) std::cout << "DEBUG 1 Current FILE writer ptr loc in archivePtr is " << archivePtr.tellp() << std::endl;
 	archivePtr.clear();
 	archivePtr.seekp(mainHeader.offsetToMeta); // set pointer to the start of the offsetToMeta
-	if (DEBUG==0) std::cout << "DEBUG  2 Current FILE writer ptr loc in archivePtr is " << archivePtr.tellp() << std::endl;
+	if (DEBUG==0) std::cout << "DEBUG   2 Current FILE writer ptr loc in archivePtr is " << archivePtr.tellp() << std::endl;
 
 	if (readFile.is_open()) {
+		char buffer;             // buffer for reading from pathToObject and writing to readFile
 		while (!readFile.eof()) {
 			buffer = (char) readFile.get();
 			archivePtr.put(buffer);
@@ -288,7 +292,7 @@ int append_file_to_disk(std::fstream &archivePtr,
 		          << pathToObject << " for writing." << std::endl;
 		return -1;
 	}
-	if (DEBUG==0) std::cout << "DEBUG   3 Current FILE writer ptr loc in archivePtr is " << archivePtr.tellp() << std::endl;
+	if (DEBUG==0) std::cout << "DEBUG     3 Current FILE writer ptr loc in archivePtr is " << archivePtr.tellp() << std::endl;
 	return 0;
 }
 
