@@ -38,14 +38,23 @@ void display_one_metadata_attrb (struct Metadata metadata_object) {
 	std::cout << "  " << "name: " << metadata_object.fileName << std::endl;
 	std::cout << "  " << "path to object: " << metadata_object.pathToObject << std::endl;
 	std::cout << "  " << "inode: " << metadata_object.inode << std::endl;
-	std::cout << "  " << "permission " << metadata_object.filePermission << std::endl;
+
+	std::cout << "  " << "permission " << mode_to_permission(metadata_object.filePermission) << std::endl;
+	// std::cout << "  " << "permission " << metadata_object.filePermission << std::endl;
+
 	std::cout << "  " << "uid: " << metadata_object.userID << std::endl;
 	std::cout << "  " << "gid: " << metadata_object.groupID << std::endl;
 	std::cout << "  " << "version: " << metadata_object.version << std::endl;
 	std::cout << "  " << "size: " << metadata_object.fileSize << std::endl;
-	std::cout << "  " << "birthtime: " << metadata_object.birthDate << std::endl;
-	std::cout << "  " << "accesstime: " << metadata_object.accessDate << std::endl;
-	std::cout << "  " << "modifytime: " << metadata_object.modifyDate << std::endl;
-	std::cout << "  " << "changetime: " << metadata_object.changeDate << std::endl;
-	std::cout << "  " << "number of hardlinks: " << metadata_object.numberOfLinks << std::endl;
+
+	std::cout << "  " << "creation time: " << unix_time_to_date(metadata_object.birthDate) << std::endl;
+	std::cout << "  " << "access time: " << unix_time_to_date(metadata_object.accessDate) << std::endl;
+	std::cout << "  " << "modify time: " << unix_time_to_date(metadata_object.modifyDate) << std::endl;
+	std::cout << "  " << "change time: " << unix_time_to_date(metadata_object.changeDate) << std::endl;
+
+	// std::cout << "  " << "birthtime: " << metadata_object.birthDate << std::endl;
+	// std::cout << "  " << "accesstime: " << metadata_object.accessDate << std::endl;
+	// std::cout << "  " << "modifytime: " << metadata_object.modifyDate << std::endl;
+	// std::cout << "  " << "changetime: " << metadata_object.changeDate << std::endl;
+	std::cout << "  " << "number of links: " << metadata_object.numberOfLinks << std::endl;
 }
