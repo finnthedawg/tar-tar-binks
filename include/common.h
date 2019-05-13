@@ -19,16 +19,29 @@ struct Metadata {
 	long offsetToFileStart;             // offset to START of file metadata refers to. Value et to -1 for directories
 	/* file information stored in inode */
 	char fileName[FILENAME_MAX];
-	char userID[20];
-	char groupID[20];
-	char filePermission[40];
-	char fileSize[40];
-	int numberOfLinks;
-	char accessDate[40];
-	char modifyDate[40];
-	char changeDate[40];
-	char birthDate[40];
-	char inode[40];
+
+	/* uncomment the part below for storing metatdata obj attrbs as chars */
+	// char userID[20];
+	// char groupID[20];
+	// char filePermission[40];
+	// char fileSize[40];
+	// int numberOfLinks;
+	// char accessDate[40];
+	// char modifyDate[40];
+	// char changeDate[40];
+	// char birthDate[40];
+	// char inode[40];
+
+	uid_t userID;
+	gid_t groupID;
+	mode_t filePermission;
+	off_t fileSize;
+	nlink_t numberOfLinks;
+	time_t accessDate;
+	time_t modifyDate;
+	time_t changeDate;
+	time_t birthDate;
+	ino_t inode;
 };
 
 /* Defining functions here */
@@ -92,4 +105,9 @@ int append_file_to_disk(std::fstream &archivePtr,
 /* gets file size of a fstream object */
 int file_size(std::fstream &fstream_obj);
 
+/* convert UNIX time format to date format */
+char * unix_time_to_date (time_t unixTime);
+
+/* converting mode_t to a permission string in format -rwxrwxrwx*/
+char * mode_to_permission (mode_t fileMode);
 #endif
