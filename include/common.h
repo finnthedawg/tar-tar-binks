@@ -6,14 +6,17 @@
 /* struct for header */
 struct Header {
 	long offsetToMeta;       // Byte offset to end of files or start of metadata
-	int fileCount;                // Number of files
-	int directoryCount;              // Number of folders
+	int fileCount;           // Number of files
+	int directoryCount;      // Number of folders
+	int symboliclinkCount;   // Number of symbolic links
+	int otherFileCount;      // Number of other file types
 };
 
 /* struct for metadata */
 struct Metadata {
 	int file;                     // 1 if metadata refers to a file otherwise 0
 	int directory;                // 1 if metadata refers to a folder otherwise 0
+	int softlink;                 // 1 if metadata refers to a softlink otherwise 0
 	char pathToObject[FILENAME_MAX];
 	int version;                  // version of file/directory
 	long offsetToFileStart;             // offset to START of file metadata refers to. Value et to -1 for directories
@@ -110,4 +113,16 @@ char * unix_time_to_date (time_t unixTime);
 
 /* converting mode_t to a permission string in format -rwxrwxrwx*/
 char * mode_to_permission (mode_t fileMode);
+
+/* converts uid to user name */
+std::string get_user_name (uid_t uid);
+
+/* convertes gid to group id */
+std::string get_group_name (uid_t gid);
+
+/*  Extracts file name from pathToObject
+    Utility code from
+   C++ Cookbook by Jeff Cogswell, Jonathan Turkanis, Christopher Diggins, D. Ryan Stephens */
+std::string get_filename_from_path(std::string &pathToObject);
+
 #endif
