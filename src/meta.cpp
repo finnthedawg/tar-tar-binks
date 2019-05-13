@@ -8,9 +8,44 @@
 #include "common.h"
 
 /* Implementation for -m flag*/
-void display_metadata_from_archive (std::vector <struct Metadata> metaVector) {
-    for(std::vector<int>::size_type i = 0; i != metaVector.size(); i++) {
+int display_metadata_from_archive (std::vector <struct Metadata> metaVector, std::string pathToObject, bool displayAll ) {
+	/* If we want to display metadata of all objects */
+	if (displayAll) {
+		std::cout << "Printing the metadata of all objects from the archive" << '\n';
+		for(std::vector<int>::size_type i = 0; i != metaVector.size(); i++) {
+			display_one_metadata_attrb(metaVector[i]);
+		}
+		return 0;
+	}
+	/* if we want to display metatdata of selected objects by path to the objects */
+	else  {
+		std::cout << "Printing the metadata of " << pathToObject << " from the archive" << '\n';
+		for(std::vector<int>::size_type i = 0; i != metaVector.size(); i++) {
+			if (metaVector[i].pathToObject == pathToObject) {
+				display_one_metadata_attrb(metaVector[i]);
+				return 0;
+			}
+		}
+		std::cerr << "Object referenced by path" << pathToObject << " not found in archive" << '\n';
+	}
+	return -1;
+}
 
-        std::cout << metaVector[i].fileName << '\n';
-    }
+/* display all attributes on Metadata object */
+void display_one_metadata_attrb (struct Metadata metadata_object) {
+	if (metadata_object.file) std::cout << "Class: File" << '\n';
+	if (metadata_object.directory) std::cout << "Class: Directory" << '\n';
+	std::cout << "  " << "name: " << metadata_object.fileName << std::endl;
+	std::cout << "  " << "path to object: " << metadata_object.pathToObject << std::endl;
+	std::cout << "  " << "inode: " << metadata_object.inode << std::endl;
+	std::cout << "  " << "permission " << metadata_object.filePermission << std::endl;
+	std::cout << "  " << "uid: " << metadata_object.userID << std::endl;
+	std::cout << "  " << "gid: " << metadata_object.groupID << std::endl;
+	std::cout << "  " << "version: " << metadata_object.version << std::endl;
+	std::cout << "  " << "size: " << metadata_object.fileSize << std::endl;
+	std::cout << "  " << "birthtime: " << metadata_object.birthDate << std::endl;
+	std::cout << "  " << "accesstime: " << metadata_object.accessDate << std::endl;
+	std::cout << "  " << "modifytime: " << metadata_object.modifyDate << std::endl;
+	std::cout << "  " << "changetime: " << metadata_object.changeDate << std::endl;
+	std::cout << "  " << "number of hardlinks: " << metadata_object.numberOfLinks << std::endl;
 }
