@@ -35,7 +35,7 @@ $(TARGET): $(OBJECTS)
 # Any file with the name clean will not interrupt the cmd clean
 .PHONY: clean
 
-clean: clean-obj clean-build clean-mac-fsys
+clean: clean-obj clean-build clean-mac-fsys clean-ad
 
 clean-obj:
 	rm -rf $(ODIR)
