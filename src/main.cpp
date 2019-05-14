@@ -128,7 +128,7 @@ int main(int argc, char *argv[]) {
 
 	// append_archive(inputList, archivePtr, mainHeader, metaVector, 'a');
 	if (DEBUG) std::cout << "DEBUG REMOVE LATER PRINTING OUT META INFORMATION FOR TESTING" << '\n';
-	display_metadata_from_archive(metaVector, inputList[0], true);
+	// display_metadata_from_archive(metaVector, inputList[0], true);
     std::cout << "DEBUG Main header contents: Offset to meta" << mainHeader.offsetToMeta << " fileCount is " << mainHeader.fileCount << '\n';
 	archivePtr.close();
 	return 0;

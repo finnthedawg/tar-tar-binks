@@ -23,32 +23,32 @@ int add_objects_to_archive(std::vector<std::string> inputList, std::fstream &arc
 	// starting from the mainHeader.offsetToMeta
 	for(std::vector<int>::size_type i = 0; i != inputList.size(); i++) {
 		std::string fileName = get_filename_from_path(inputList[i]);
-		if (DEBUG) std::cout << "DEBUG IMPORTANT Printing file name without leading path " << fileName << '\n';
+		if (DEBUG) std::cout << "DEBUG Printing file name without leading path " << fileName << '\n';
 		if (DEBUG) std::cout << "DEBUG Starting archive with (fullpath) " << inputList[i] << std::endl;
 
 		/* IMPORTANT this if check is only done once in the begining if there is only one main file or folder to archive */
 		if (stat((inputList[i]).c_str(), &initialStat) == 0) {
 			if (S_ISDIR(initialStat.st_mode)) {     // inputList[i] is a directory
 				mainHeader.directoryCount++;
-				if (DEBUG) std::cout << "DEBUG: name of directory=" << fileName<< std::endl;
+				if (DEBUG) std::cout << "DEBUG Name of directory = " << fileName<< std::endl;
 				update_metadata_in_memory(mainHeader, fileName, inputList[i], metaVector, archivePtr, flag);
 			}
 			else if(S_ISREG(initialStat.st_mode)) { // inputList[i] is a regular file
 				mainHeader.fileCount++;
-				if (DEBUG) std::cout << "DEBUG: name of file=" << fileName << std::endl;
+				if (DEBUG) std::cout << "DEBUG Name of file = " << fileName << std::endl;
 				append_to_metadata(fileName, inputList[i], metaVector, mainHeader, archivePtr, flag);
 				continue; // continue iteration without calling iterate_through_dir if it is a file
 			}
 			else if(S_ISLNK(initialStat.st_mode)) { // inputList[i] is a symbolic link
 				mainHeader.symboliclinkCount++;
-				if (DEBUG) std::cout << "DEBUG: name of symbolic link = " << fileName << std::endl;
+				if (DEBUG) std::cout << "DEBUG Name of symbolic link = " << fileName << std::endl;
 				// TODO stat might not work for symbolic links
 				// update_metadata_in_memory(mainHeader, fileName, inputList[i], metaVector, archivePtr, flag);
 				continue; // continue iteration without calling iterate_through_dir if it is a file
 			}
 			else {                                  // pipes, sockets or other file types
 				mainHeader.otherFileCount++;
-				if (DEBUG) std::cout << "DEBUG: name of other file = " << fileName << std::endl;
+				if (DEBUG) std::cout << "DEBUG Name of other file = " << fileName << std::endl;
 				append_to_metadata(fileName, inputList[i], metaVector, mainHeader, archivePtr, flag);
 				continue; // continue iteration without calling iterate_through_dir if it is a file
 			}
@@ -135,20 +135,20 @@ int write_header_to_disk(struct Header &mainHeader,
                          std::fstream &archivePtr) {
 	if (archivePtr.is_open()) {
 		archivePtr.clear();                 // clear the eof flag if it has been set for archivePtr
-		if (DEBUG==0) std::cout << "DEBUG Current ptr loc in archivePtr is " << archivePtr.tellg() <<" "<< archivePtr.tellp() << std::endl;
+		if (DEBUG) std::cout << "DEBUG Current ptr loc in archivePtr is " << archivePtr.tellg() <<" "<< archivePtr.tellp() << std::endl;
 		archivePtr.seekp(0, std::ios::beg); // reset the archivePtr to the start of the archive file
-		if (DEBUG==0) std::cout << "DEBUG Current ptr loc in archivePtr is " << archivePtr.tellg() <<" "<< archivePtr.tellp() << std::endl;
+		if (DEBUG) std::cout << "DEBUG Current ptr loc in archivePtr is " << archivePtr.tellg() <<" "<< archivePtr.tellp() << std::endl;
 		int mainHeaderSize = sizeof(mainHeader);
 		std::cout << "DEBUG " <<mainHeader.offsetToMeta << " " << mainHeader.fileCount << " " << mainHeader.directoryCount << std::endl;
 
 		// fwrite(&mainHeader, sizeof(Header), 1, archivePtr);
-		if (DEBUG==0) std::cout << "DEBUG Current ptr loc in archivePtr is " << archivePtr.tellg() <<" "<< archivePtr.tellp() << std::endl;
+		if (DEBUG) std::cout << "DEBUG Current ptr loc in archivePtr is " << archivePtr.tellg() <<" "<< archivePtr.tellp() << std::endl;
 		archivePtr.seekp(0, std::fstream::beg);
-		archivePtr.write((char *)(&mainHeader), mainHeaderSize);
+		archivePtr.write(reinterpret_cast<char*>(&mainHeader), mainHeaderSize);
 
-		if (DEBUG==0) std::cout << "DEBUG Current ptr loc in archivePtr is " << archivePtr.tellg() <<" "<< archivePtr.tellp() << std::endl;
+		if (DEBUG) std::cout << "DEBUG Current ptr loc in archivePtr is " << archivePtr.tellg() <<" "<< archivePtr.tellp() << std::endl;
 		std::cout << "DEBUG Main hdr size is " << mainHeaderSize << '\n';
-		if (DEBUG==0) std::cout << "DEBUG Current ptr loc in archivePtr is " << archivePtr.tellg() <<" "<< archivePtr.tellp() << std::endl;
+		if (DEBUG) std::cout << "DEBUG Current ptr loc in archivePtr is " << archivePtr.tellg() <<" "<< archivePtr.tellp() << std::endl;
 		std::cout << "DEBUG Printing m" << (char*)&mainHeader << std::endl;
 		archivePtr.seekp(0, std::fstream::beg);
 		// archivePtr.write((mainHeader.offsetToMeta), sizeof(mainHeader.offsetToMeta));
@@ -218,7 +218,7 @@ struct Metadata create_Metadata_object(struct Header &mainHeader,
 	inode = std::to_string(fileStat.st_ino);
 	numLinks = fileStat.st_nlink;
 
-	if (DEBUG) {
+	if (DEBUG==0) {
 		std::cout << "DEBUG File name: " << pathToObject << std::endl;
 		std::cout << "    DEBUG User ID: " << fileStat.st_uid << std::endl;
 		std::cout << "    DEBUG Group ID: " << fileStat.st_gid << std::endl;
