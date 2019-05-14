@@ -49,6 +49,10 @@ struct Metadata {
 
 /* Defining functions here */
 
+/* function to add objects to archive works for both -c and -a flags */
+int add_objects_to_archive(std::vector<std::string> inputList, std::fstream &archivePtr,
+                           struct Header &mainHeader, std::vector<struct Metadata>& metaVector, char flag);
+
 /* Recursive iteration through directories in disk and add the information about the file/directory to
     the metadata vector and Immediately write to archive file on disk if its a file */
 void iterate_through_dir(std::string &baseDirName,
