@@ -96,7 +96,7 @@ int main(int argc, char *argv[]) {
 		break;
 	case 'x': // -x extract flag with/without -o version flag TODO
 		if (DEBUG) std::cout << "DEBUG -x flag used" << '\n';
-		// iterating through the inputList vector to extract all the stated files/ non-empty dirs
+		// iterating through the inputList vector to extract all the correct version
 		for(std::vector<int>::size_type i = 0; i != inputList.size(); i++) {
 			if (DEBUG) std::cout << "DEBUG " << inputList[i] << std::endl;
 			// TODO
