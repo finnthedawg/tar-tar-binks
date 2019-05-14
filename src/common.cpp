@@ -11,6 +11,7 @@
 #include <sys/stat.h>
 #include <sys/types.h>
 #include <uuid/uuid.h>
+#include <string>
 #include "common.h"
 
 /* function to add objects to archive works for both -c and -a flags */
@@ -286,19 +287,19 @@ int update_metadata_in_memory( struct Header &mainHeader,
 	/* if flag is 'a' then search through the Global Metadata Struct to update the version
 	   if not found, push to vector */
 	if (flag == 'a') {
-		bool prevMetaFound = false;
-		// IMPORTANT MORE CHECKS REQUIRED HERE
-		for(std::vector<int>::size_type i = 0; i != metaVector.size(); i++) {
-			/* if an older version of the file has been found, add a new version of object to metadata */
-			if ((std::string)(metaVector[i].pathToObject) == pathToObject) {
-				currentMeta.version += 1; // increment the version number
-				metaVector.push_back(currentMeta);
-				prevMetaFound = true;
-				break;
-			}
-		}
-		// if no older version of the metadata was found, add without incrementing version
-		if (!prevMetaFound) metaVector.push_back(currentMeta);
+    /* Check the latest version (0 if none found) */
+    int version = 1;
+    for (std::vector <struct Metadata>::iterator it = metaVector.begin(); it != metaVector.end(); it++){
+      std::string s1(it->pathToObject); //Convert to c++ string for comparison
+      std::string s2(pathToObject);
+      if (s1 == s2){
+        version ++;
+      }
+    }
+
+    currentMeta.version = version;
+    metaVector.push_back(currentMeta);
+
 	}
 	/* if flag is 'c' add to vector directly */
 	else if (flag == 'c') {
