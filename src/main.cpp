@@ -125,6 +125,11 @@ int main(int argc, char *argv[]) {
 	default:
 		std::cout << "ERROR: invalid flags" << '\n';
 	}
+
+	append_archive(inputList, archivePtr, mainHeader, metaVector, 'a');
+	if (DEBUG) std::cout << "DEBUG REMOVE LATER PRINTING OUT META INFORMATION FOR TESTING" << '\n';
+	display_metadata_from_archive(metaVector, inputList[0], true);
+
 	archivePtr.close();
 	return 0;
 }
