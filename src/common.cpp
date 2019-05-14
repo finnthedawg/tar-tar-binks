@@ -122,14 +122,6 @@ void iterate_through_dir(std::string &baseDirName,
 	}
 }
 
-// /* Read Header from disk */
-// struct Header read_header_from_disk(std::fstream archivePtr) {
-//  // TODO read the size of long long to read the offsetToMeta
-//  // TODO read the size of int to read the number of files & folders
-//  struct Header mainReadHeader;
-//  return mainReadHeader;
-// }
-
 /* Write header to disk */
 int write_header_to_disk(struct Header &mainHeader,
                          std::fstream &archivePtr) {
