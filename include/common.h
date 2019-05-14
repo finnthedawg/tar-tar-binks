@@ -68,8 +68,7 @@ int write_header_to_disk(struct Header &mainHeader,
                          std::fstream &archivePtr);
 
 /* Read Metadata from disk */
-std::vector <struct Metadata> read_metadata_from_disk(std::fstream &archivePtr,
-                                                      struct Header &mainHeader);
+int read_metadata_from_disk(std::fstream &archivePtr, struct Header &mainHeader, std::vector<struct Metadata> &metaVector);
 
 /* Write Metadata to disk */
 /* Call this function at the very end */

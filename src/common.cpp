@@ -139,22 +139,19 @@ int write_header_to_disk(struct Header &mainHeader,
 }
 
 // TODO TODO TODO TODO TODO TODO TODO
-/* Read Metadata from disk */
-std::vector <struct Metadata> read_metadata_from_disk(std::fstream &archivePtr,
-                                                      struct Header &mainHeader){
+/* Read netadata from the archive file */
+int read_metadata_from_disk(std::fstream &archivePtr, struct Header &mainHeader, std::vector<struct Metadata> &metaVector){
 	archivePtr.seekg(mainHeader.offsetToMeta);    // Seek to the offset of metadata Header.offsetToMeta
-	std::vector <struct Metadata> metaVector;
-	while (archivePtr.is_open()) {
-		struct Metadata meta;
-		archivePtr.read((char *)&meta, sizeof(Metadata));
-		metaVector.push_back(meta);
-	}
-	return metaVector;
+  for(int i = 0; i < mainHeader.fileCount + mainHeader.directoryCount; i++){
+    struct Metadata meta;
+    archivePtr.read((char *)&meta, sizeof(Metadata));
+    metaVector.push_back(meta);
+  }
+	return 0;
 }
 
 //  TODO TODO TODO TODO TODO TODO
-/* Write Metadata to disk */
-/* Call this function at the very end */
+/* Write our medata struct from from the archive file */
 int write_metadata_to_disk(struct Header &mainHeader,
                            std::fstream &archivePtr,
                            std::vector <struct Metadata> &metaVector){

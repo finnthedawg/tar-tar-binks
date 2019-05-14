@@ -79,6 +79,8 @@ int main(int argc, char *argv[]) {
 		archivePtr.read(reinterpret_cast<char*>(&mainHeader),sizeof(mainHeader));
 		if (DEBUG) std::cout << "DEBUG Read header offset:" << mainHeader.offsetToMeta \
 			                 << " fileCount: " << mainHeader.fileCount << " directoryCount " << mainHeader.directoryCount << std::endl;
+    read_metadata_from_disk(archivePtr, mainHeader, metaVector);
+    // display_hierarchy_from_archive(metaVector); // DEBUG remove later 
 	}
 
 	if (DEBUG) std::cout << "DEBUG Archive Name is " <<archiveName << ". Version is "<< version << std::endl;
