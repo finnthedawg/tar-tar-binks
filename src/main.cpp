@@ -55,15 +55,15 @@ int main(int argc, char *argv[]) {
 				std::cout << "DEBUG " << archiveName << " does not exist. No need to remove" << std::endl;
 			}
 		}
-		mainHeader.offsetToMeta = sizeof(mainHeader); // set the offsetToMeta to size of mainHeader only for -c flag
+		mainHeader.offsetToMeta = sizeof(mainHeader);   // set the offsetToMeta to size of mainHeader only for -c flag
 	}
 
 	std::fstream archivePtr;
 	archivePtr.imbue(std::locale::classic());
-  archivePtr.open(archiveName, std::ios::app);
-  archivePtr.close();
+	archivePtr.open(archiveName, std::ios::app);        // creates file if not present already
+	archivePtr.close();
 	archivePtr.open(archiveName, std::ios::in |
-	                std::ios::out | std::ios::binary ); // open archiveName with rd, wrt and append perm
+	                std::ios::out | std::ios::binary ); // open archiveName with rd and wrt perm
 	if ( !(archivePtr.is_open()) ) {
 		std::cerr << "ERROR: cannot open "<< archiveName << std::endl;
 		return -1;
@@ -88,7 +88,6 @@ int main(int argc, char *argv[]) {
 	case 'c': // -c store flag
 	{
 		if (DEBUG) std::cout << "DEBUG -c flag used" << '\n';
-		archivePtr.write(reinterpret_cast<char*>(&mainHeader),sizeof(mainHeader)); //Initialize the header in archive.
 		store_archive(inputList, archivePtr, mainHeader, metaVector, 'c');
 		break;
 	}
@@ -131,7 +130,7 @@ int main(int argc, char *argv[]) {
 	// append_archive(inputList, archivePtr, mainHeader, metaVector, 'a');
 	if (DEBUG) std::cout << "DEBUG REMOVE LATER PRINTING OUT META INFORMATION FOR TESTING" << '\n';
 	// display_metadata_from_archive(metaVector, inputList[0], true);
-    std::cout << "DEBUG Main header contents: Offset to meta" << mainHeader.offsetToMeta << " fileCount is " << mainHeader.fileCount << '\n';
+	std::cout << "DEBUG Main header contents: Offset to meta" << mainHeader.offsetToMeta << " fileCount is " << mainHeader.fileCount << '\n';
 	archivePtr.close();
 	return 0;
 }
