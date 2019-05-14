@@ -60,8 +60,10 @@ int main(int argc, char *argv[]) {
 
 	std::fstream archivePtr;
 	archivePtr.imbue(std::locale::classic());
+  archivePtr.open(archiveName, std::ios::app);
+  archivePtr.close();
 	archivePtr.open(archiveName, std::ios::in |
-	                std::ios::out | std::ios::app | std::ios::binary ); // open archiveName with rd, wrt and append perm
+	                std::ios::out | std::ios::binary ); // open archiveName with rd, wrt and append perm
 	if ( !(archivePtr.is_open()) ) {
 		std::cerr << "ERROR: cannot open "<< archiveName << std::endl;
 		return -1;

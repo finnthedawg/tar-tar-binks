@@ -144,6 +144,7 @@ int write_header_to_disk(struct Header &mainHeader,
 		// fwrite(&mainHeader, sizeof(Header), 1, archivePtr);
 		if (DEBUG) std::cout << "DEBUG Current ptr loc in archivePtr is " << archivePtr.tellg() <<" "<< archivePtr.tellp() << std::endl;
 		archivePtr.seekp(0, std::fstream::beg);
+    archivePtr.write("YAY\n",4);
 		archivePtr.write(reinterpret_cast<char*>(&mainHeader), mainHeaderSize);
 
 		if (DEBUG) std::cout << "DEBUG Current ptr loc in archivePtr is " << archivePtr.tellg() <<" "<< archivePtr.tellp() << std::endl;
