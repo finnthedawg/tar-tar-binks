@@ -135,26 +135,9 @@ int write_header_to_disk(struct Header &mainHeader,
                          std::fstream &archivePtr) {
 	if (archivePtr.is_open()) {
 		archivePtr.clear();                 // clear the eof flag if it has been set for archivePtr
-		if (DEBUG) std::cout << "DEBUG Current ptr loc in archivePtr is " << archivePtr.tellg() <<" "<< archivePtr.tellp() << std::endl;
 		archivePtr.seekp(0, std::ios::beg); // reset the archivePtr to the start of the archive file
-		if (DEBUG) std::cout << "DEBUG Current ptr loc in archivePtr is " << archivePtr.tellg() <<" "<< archivePtr.tellp() << std::endl;
 		int mainHeaderSize = sizeof(mainHeader);
-		std::cout << "DEBUG " <<mainHeader.offsetToMeta << " " << mainHeader.fileCount << " " << mainHeader.directoryCount << std::endl;
-
-		// fwrite(&mainHeader, sizeof(Header), 1, archivePtr);
-		if (DEBUG) std::cout << "DEBUG Current ptr loc in archivePtr is " << archivePtr.tellg() <<" "<< archivePtr.tellp() << std::endl;
-		archivePtr.seekp(0, std::fstream::beg);
-    archivePtr.write("YAY\n",4);
 		archivePtr.write(reinterpret_cast<char*>(&mainHeader), mainHeaderSize);
-
-		if (DEBUG) std::cout << "DEBUG Current ptr loc in archivePtr is " << archivePtr.tellg() <<" "<< archivePtr.tellp() << std::endl;
-		std::cout << "DEBUG Main hdr size is " << mainHeaderSize << '\n';
-		if (DEBUG) std::cout << "DEBUG Current ptr loc in archivePtr is " << archivePtr.tellg() <<" "<< archivePtr.tellp() << std::endl;
-		std::cout << "DEBUG Printing m" << (char*)&mainHeader << std::endl;
-		archivePtr.seekp(0, std::fstream::beg);
-		// archivePtr.write((mainHeader.offsetToMeta), sizeof(mainHeader.offsetToMeta));
-		// archivePtr.write((mainHeader.fileCount), sizeof(mainHeader.fileCount));
-		// archivePtr.write((mainHeader.directoryCount), sizeof(main.directoryCount));
 	}
 	else {
 		std::cerr << "Failed to open archive file for writing header info" << std::endl;
@@ -314,19 +297,19 @@ int update_metadata_in_memory( struct Header &mainHeader,
 	/* if flag is 'a' then search through the Global Metadata Struct to update the version
 	   if not found, push to vector */
 	if (flag == 'a') {
-        bool prevMetaFound = false;
+		bool prevMetaFound = false;
 		// IMPORTANT MORE CHECKS REQUIRED HERE
 		for(std::vector<int>::size_type i = 0; i != metaVector.size(); i++) {
 			/* if an older version of the file has been found, add a new version of object to metadata */
 			if ((std::string)(metaVector[i].pathToObject) == pathToObject) {
 				currentMeta.version += 1; // increment the version number
 				metaVector.push_back(currentMeta);
-                prevMetaFound = true;
+				prevMetaFound = true;
 				break;
 			}
 		}
-        // if no older version of the metadata was found, add without incrementing version
-        if (!prevMetaFound) metaVector.push_back(currentMeta);
+		// if no older version of the metadata was found, add without incrementing version
+		if (!prevMetaFound) metaVector.push_back(currentMeta);
 	}
 	/* if flag is 'c' add to vector directly */
 	else if (flag == 'c') {
