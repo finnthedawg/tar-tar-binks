@@ -339,8 +339,9 @@ int append_file_to_disk(std::fstream &archivePtr,
 	archivePtr.seekp(mainHeader.offsetToMeta); // set pointer to the start of the offsetToMeta
 	if (DEBUG==0) std::cout << "DEBUG   2 Current FILE writer ptr loc in archivePtr is " << archivePtr.tellp() << std::endl;
 
+  /* Write the content to the archive */
 	if (readFile.is_open()) {
-		char buffer;                           // buffer for reading from pathToObject and writing to readFile
+		char buffer;
 		while (!readFile.eof()) {
 			buffer = (char) readFile.get();
 			archivePtr.put(buffer);
