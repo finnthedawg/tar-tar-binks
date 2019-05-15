@@ -143,11 +143,11 @@ int write_header_to_disk(struct Header &mainHeader,
 /* Read netadata from the archive file */
 int read_metadata_from_disk(std::fstream &archivePtr, struct Header &mainHeader, std::vector<struct Metadata> &metaVector){
 	archivePtr.seekg(mainHeader.offsetToMeta);    // Seek to the offset of metadata Header.offsetToMeta
-  for(int i = 0; i < mainHeader.fileCount + mainHeader.directoryCount; i++){
-    struct Metadata meta;
-    archivePtr.read((char *)&meta, sizeof(Metadata));
-    metaVector.push_back(meta);
-  }
+	for(int i = 0; i < mainHeader.fileCount + mainHeader.directoryCount; i++) {
+		struct Metadata meta;
+		archivePtr.read((char *)&meta, sizeof(Metadata));
+		metaVector.push_back(meta);
+	}
 	return 0;
 }
 
@@ -254,19 +254,6 @@ struct Metadata create_Metadata_object(struct Header &mainHeader,
 	   snprintf(currentMeta.modifyDate, sizeof(currentMeta.modifyDate), "%s", (modifyDate).c_str());
 	   snprintf(currentMeta.changeDate, sizeof(currentMeta.changeDate), "%s", (changeDate).c_str());
 	 */
-	/* Security not present for string copy
-	   strncpy(currentMeta.pathToObject, (pathToObject+"\0").c_str(), pathToObject.length()+1)
-	   strncpy(currentMeta.inode, (inode+"\0").c_str(), inode.length()+1);
-	   strncpy(currentMeta.fileSize, (size+"\0").c_str(), size.length()+1);
-	   strncpy(currentMeta.userID, (userID+"\0").c_str(), userID.length()+1);
-	   strncpy(currentMeta.groupID, (groupID+"\0").c_str(), groupID.length()+1);
-	   strncpy(currentMeta.filePermission, (mode+"\0").c_str(), mode.length()+1);
-	   strncpy(currentMeta.fileName, (fileName+"\0").c_str(), fileName.length()+1);
-	   strncpy(currentMeta.birthDate, (birthDate+"\0").c_str(), birthDate.length()+1);
-	   strncpy(currentMeta.accessDate, (accessDate+"\0").c_str(), accessDate.length()+1);
-	   strncpy(currentMeta.modifyDate, (modifyDate+"\0").c_str(), modifyDate.length()+1);
-	   strncpy(currentMeta.changeDate, (changeDate+"\0").c_str(), changeDate.length()+1);
-	 */
 	return currentMeta; // return the populated Metadata object
 }
 
@@ -287,19 +274,17 @@ int update_metadata_in_memory( struct Header &mainHeader,
 	/* if flag is 'a' then search through the Global Metadata Struct to update the version
 	   if not found, push to vector */
 	if (flag == 'a') {
-    /* Check the latest version (0 if none found) */
-    int version = 1;
-    for (std::vector <struct Metadata>::iterator it = metaVector.begin(); it != metaVector.end(); it++){
-      std::string s1(it->pathToObject); //Convert to c++ string for comparison
-      std::string s2(pathToObject);
-      if (s1 == s2){
-        version ++;
-      }
-    }
-
-    currentMeta.version = version;
-    metaVector.push_back(currentMeta);
-
+		/* Check the latest version (0 if none found) */
+		int version = 1;
+		for (std::vector <struct Metadata>::iterator it = metaVector.begin(); it != metaVector.end(); it++) {
+			std::string s1(it->pathToObject); //Convert to c++ string for comparison
+			std::string s2(pathToObject);
+			if (s1 == s2) {
+				version++;
+			}
+		}
+		currentMeta.version = version;
+		metaVector.push_back(currentMeta);
 	}
 	/* if flag is 'c' add to vector directly */
 	else if (flag == 'c') {
@@ -340,7 +325,7 @@ int append_file_to_disk(std::fstream &archivePtr,
 	archivePtr.seekp(mainHeader.offsetToMeta); // set pointer to the start of the offsetToMeta
 	if (DEBUG==0) std::cout << "DEBUG   2 Current FILE writer ptr loc in archivePtr is " << archivePtr.tellp() << std::endl;
 
-  /* Write the content to the archive */
+	/* Write the content to the archive */
 	if (readFile.is_open()) {
 		char buffer;
 		while (!readFile.eof()) {
