@@ -102,11 +102,9 @@ int main(int argc, char *argv[]) {
 		/* if no version is specified then extract the latest ver of all files */
 		if (argc == 3) {
 			extract_archive_version(archivePtr,metaVector,-1);
-		}
-        /* extract all the files with the version specified by the -o flag */
-        else {
-            extract_archive_version(archivePtr,metaVector,version);
-        }
+		} else { /* extract all the files with the version specified by the -o flag */
+      extract_archive_version(archivePtr,metaVector,version);
+    }
 		break;
 	case 'm': // -m print metatdata flag
 		if (DEBUG) std::cout << "DEBUG -m flag" << '\n';
