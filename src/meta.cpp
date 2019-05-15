@@ -36,9 +36,13 @@ void display_one_metadata_attrb (struct Metadata &metadata_object) {
 	if (metadata_object.file) std::cout << "Type: File" << '\n';
 	if (metadata_object.directory) std::cout << "Type: Directory" << '\n';
 	if (metadata_object.softlink) std::cout << "Type: Softlink" << '\n';
+	if (!(metadata_object.file || metadata_object.directory || metadata_object.softlink)) {
+		std::cout << "Type: Other file type" << '\n';
+	}
 
 	std::cout << "  " << "name: " << metadata_object.fileName << std::endl;
 	std::cout << "  " << "path to object: " << metadata_object.pathToObject << std::endl;
+	if (metadata_object.softlink) std::cout << "  " << "Symbolic link target path: " << metadata_object.symLinkTarget << std::endl;
 	std::cout << "  " << "inode: " << metadata_object.inode << std::endl;
 
 	std::cout << "  " << "permission " << mode_to_permission(metadata_object.filePermission) << std::endl;
