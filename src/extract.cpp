@@ -35,6 +35,32 @@ int extract_archive_version(std::fstream &archivePtr, std::vector<struct Metadat
 std::vector<struct Metadata> create_filtered_latest_metadata(std::vector<struct Metadata> &metaVector){
   //The new filtered vector we will be returned
   std::vector<struct Metadata> filtered;
+  //The copy we will sort and check.
+  std::vector<struct Metadata> copy;
+  for(std::vector<struct Metadata>::iterator it = metaVector.begin(); it != metaVector.end(); it++){
+    copy.push_back(*it);
+  }
+  //Sorting
+  std::sort(copy.begin(), copy.end(), [](struct Metadata meta1, struct Metadata meta2){
+    return meta1.version > meta2.version;
+  });
+  //Checking if it already exists
+  for(std::vector<struct Metadata>::iterator it = copy.begin(); it != copy.end(); it++){
+    //See if this exists in output filtered vector
+    std::vector<struct Metadata>::iterator out_it = std::find_if(filtered.begin(), filtered.end(), [](struct Metadata meta){
+      std::string filtered(meta.pathToObject); //In output results
+      std::string sorted(meta.pathToObject); //Searching for this
+      if (filtered.compare(sorted) == 0){
+        return(1); // meta found
+      } else {
+        return(0); //meta not found
+      }
+    });
+    //If doesn't, then add it to output filtered vector
+    if (out_it != filtered.end()){
+      filtered.push_back(*it);
+    }
+  }
   return(filtered);
 }
 
