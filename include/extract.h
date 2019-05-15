@@ -8,4 +8,4 @@
 int extract_archive_version(std::fstream &archivePtr, std::vector<struct Metadata> &metaVector, int version);
 
 /* Extracts one file or directory */
-int extract_archive(std::fstream &archivePtr, struct Metadata &meta);
+int extract_meta_file(std::fstream &archivePtr, struct Metadata &meta);
