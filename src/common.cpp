@@ -220,7 +220,7 @@ struct Metadata create_metadata_object(struct Header &mainHeader,
 		currentMeta.file = 0;
 		currentMeta.offsetToFileStart = -1; // -1 for softlinks
 		currentMeta.softlink = 1;
-        readlink(pathToObject.c_str(), currentMeta.symLinkTarget, FILENAME_MAX);
+		readlink(pathToObject.c_str(), currentMeta.symLinkTarget, FILENAME_MAX);
 	}
 	// regular file
 	else if (S_ISREG(fileStat.st_mode)) {
