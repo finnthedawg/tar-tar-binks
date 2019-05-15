@@ -17,10 +17,10 @@ void display_hierarchy_from_archive (std::vector <struct Metadata> &metaVector) 
 		std::string path1(meta1.pathToObject);
 		std::string path2(meta2.pathToObject);
 		return (-1*path1.compare(path2));
-		if (path1.compare(path2) == 0){
-			return ((int)(meta1.version < meta2.version));
+		if (path1.compare(path2) == 0) {
+		    return ((int)(meta1.version < meta2.version));
 		} else {
-			return (-1*path1.compare(path2));
+		    return (-1*path1.compare(path2));
 		}
 	});
 	/* Print the hierarchy along with the version */

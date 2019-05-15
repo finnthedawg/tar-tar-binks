@@ -143,11 +143,11 @@ int write_header_to_disk(struct Header &mainHeader,
 /* Read netadata from the archive file */
 int read_metadata_from_disk(std::fstream &archivePtr, struct Header &mainHeader, std::vector<struct Metadata> &metaVector){
 	archivePtr.seekg(mainHeader.offsetToMeta);    // Seek to the offset of metadata Header.offsetToMeta
-  for(int i = 0; i < mainHeader.fileCount + mainHeader.directoryCount; i++){
-    struct Metadata meta;
-    archivePtr.read((char *)&meta, sizeof(Metadata));
-    metaVector.push_back(meta);
-  }
+	for(int i = 0; i < mainHeader.fileCount + mainHeader.directoryCount; i++) {
+		struct Metadata meta;
+		archivePtr.read((char *)&meta, sizeof(Metadata));
+		metaVector.push_back(meta);
+	}
 	return 0;
 }
 
@@ -287,18 +287,18 @@ int update_metadata_in_memory( struct Header &mainHeader,
 	/* if flag is 'a' then search through the Global Metadata Struct to update the version
 	   if not found, push to vector */
 	if (flag == 'a') {
-    /* Check the latest version (0 if none found) */
-    int version = 1;
-    for (std::vector <struct Metadata>::iterator it = metaVector.begin(); it != metaVector.end(); it++){
-      std::string s1(it->pathToObject); //Convert to c++ string for comparison
-      std::string s2(pathToObject);
-      if (s1 == s2){
-        version ++;
-      }
-    }
+		/* Check the latest version (0 if none found) */
+		int version = 1;
+		for (std::vector <struct Metadata>::iterator it = metaVector.begin(); it != metaVector.end(); it++) {
+			std::string s1(it->pathToObject); //Convert to c++ string for comparison
+			std::string s2(pathToObject);
+			if (s1 == s2) {
+				version++;
+			}
+		}
 
-    currentMeta.version = version;
-    metaVector.push_back(currentMeta);
+		currentMeta.version = version;
+		metaVector.push_back(currentMeta);
 
 	}
 	/* if flag is 'c' add to vector directly */
@@ -340,7 +340,7 @@ int append_file_to_disk(std::fstream &archivePtr,
 	archivePtr.seekp(mainHeader.offsetToMeta); // set pointer to the start of the offsetToMeta
 	if (DEBUG==0) std::cout << "DEBUG   2 Current FILE writer ptr loc in archivePtr is " << archivePtr.tellp() << std::endl;
 
-  /* Write the content to the archive */
+	/* Write the content to the archive */
 	if (readFile.is_open()) {
 		char buffer;
 		while (!readFile.eof()) {
