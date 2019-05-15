@@ -79,8 +79,8 @@ int main(int argc, char *argv[]) {
 		archivePtr.read(reinterpret_cast<char*>(&mainHeader),sizeof(mainHeader));
 		if (DEBUG) std::cout << "DEBUG Read header offset:" << mainHeader.offsetToMeta \
 			                 << " fileCount: " << mainHeader.fileCount << " directoryCount " << mainHeader.directoryCount << std::endl;
-    read_metadata_from_disk(archivePtr, mainHeader, metaVector);
-    // display_hierarchy_from_archive(metaVector); // DEBUG remove later
+		read_metadata_from_disk(archivePtr, mainHeader, metaVector);
+		// display_hierarchy_from_archive(metaVector); // DEBUG remove later
 	}
 
 	if (DEBUG) std::cout << "DEBUG Archive Name is " <<archiveName << ". Version is "<< version << std::endl;
@@ -100,12 +100,7 @@ int main(int argc, char *argv[]) {
 	case 'x': // -x extract flag with/without -o version flag TODO
 		if (DEBUG) std::cout << "DEBUG -x flag used" << '\n';
 		// iterating through the inputList vector to extract all the correct version
-    extract_archive_version(archivePtr,metaVector,1);
-		// for(std::vector<int>::size_type i = 0; i != inputList.size(); i++) {
-		// 	if (DEBUG) std::cout << "DEBUG " << inputList[i] << std::endl;
-		// 	// TODO
-		// 	// run the extract function for each file/dir in the inputList
-		// }
+		extract_archive_version(archivePtr,metaVector,1);
 		break;
 	case 'm': // -m print metatdata flag
 		if (DEBUG) std::cout << "DEBUG -m flag" << '\n';
@@ -130,10 +125,6 @@ int main(int argc, char *argv[]) {
 		std::cout << "ERROR: invalid flags" << '\n';
 	}
 
-	// append_archive(inputList, archivePtr, mainHeader, metaVector, 'a');
-	if (DEBUG) std::cout << "DEBUG REMOVE LATER PRINTING OUT META INFORMATION FOR TESTING" << '\n';
-	// display_metadata_from_archive(metaVector, inputList[0], true);
-	std::cout << "DEBUG Main header contents: Offset to meta" << mainHeader.offsetToMeta << " fileCount is " << mainHeader.fileCount << '\n';
 	archivePtr.close();
 	return 0;
 }
