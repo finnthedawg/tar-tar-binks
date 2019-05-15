@@ -9,3 +9,6 @@ int extract_archive_version(std::fstream &archivePtr, std::vector<struct Metadat
 
 /* Extracts one file or directory */
 int extract_meta_file(std::fstream &archivePtr, struct Metadata &meta);
+
+/* Filters metaVector and returns a filtered medatada with only the latest version of each meta */
+std::vector<struct Metadata> create_filtered_latest_metadata(std::vector<struct Metadata> &metaVector);
