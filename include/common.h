@@ -19,9 +19,10 @@ struct Metadata {
 	int softlink;                 // 1 if metadata refers to a softlink otherwise 0
 	char pathToObject[FILENAME_MAX];
 	int version;                  // version of file/directory
-	long offsetToFileStart;             // offset to START of file metadata refers to. Value et to -1 for directories
+	long offsetToFileStart;       // offset to START of file metadata refers to. Value et to -1 for directories
 	/* file information stored in inode */
 	char fileName[FILENAME_MAX];
+	char symLinkTarget[FILENAME_MAX]; // target path of file symlink points to, empty for normal files/folders
 
 	/* uncomment the part below for storing metatdata obj attrbs as chars */
 	// char userID[20];
@@ -77,7 +78,7 @@ int write_metadata_to_disk(struct Header &mainHeader,
                            std::vector <struct Metadata> &metaVector);
 
 /* Create a new Metadata object */
-struct Metadata create_Metadata_object(struct Header &mainHeader,
+struct Metadata create_metadata_object(struct Header &mainHeader,
                                        std::string &fileName,
                                        std::string &pathToObject);
 

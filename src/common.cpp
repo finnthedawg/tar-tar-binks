@@ -28,7 +28,7 @@ int add_objects_to_archive(std::vector<std::string> inputList, std::fstream &arc
 		if (DEBUG) std::cout << "DEBUG Starting archive with (fullpath) " << inputList[i] << std::endl;
 
 		/* IMPORTANT this if check is only done once in the begining if there is only one main file or folder to archive */
-		if (stat((inputList[i]).c_str(), &initialStat) == 0) {
+		if (lstat((inputList[i]).c_str(), &initialStat) == 0) {
 			if (S_ISDIR(initialStat.st_mode)) {     // inputList[i] is a directory
 				mainHeader.directoryCount++;
 				if (DEBUG) std::cout << "DEBUG Name of directory = " << fileName<< std::endl;
@@ -44,7 +44,7 @@ int add_objects_to_archive(std::vector<std::string> inputList, std::fstream &arc
 				mainHeader.symboliclinkCount++;
 				if (DEBUG) std::cout << "DEBUG Name of symbolic link = " << fileName << std::endl;
 				// TODO stat might not work for symbolic links
-				// update_metadata_in_memory(mainHeader, fileName, inputList[i], metaVector, archivePtr, flag);
+				update_metadata_in_memory(mainHeader, fileName, inputList[i], metaVector, archivePtr, flag);
 				continue; // continue iteration without calling iterate_through_dir if it is a file
 			}
 			else {                                  // pipes, sockets or other file types
@@ -102,7 +102,7 @@ void iterate_through_dir(std::string &baseDirName,
 				case DT_LNK:// if dirReadPointer is a symbolic link
 					mainHeader.symboliclinkCount++;
 					if (DEBUG) std::cout << "DEBUG Name of symbolic link = " << fileName << std::endl;
-					append_to_metadata(fileName, pathToObject, metaVector, mainHeader, archivePtr, flag);
+					update_metadata_in_memory(mainHeader, fileName, pathToObject, metaVector, archivePtr, flag);
 					break;
 				case DT_DIR:// if dirReadPointer is a directory
 					mainHeader.directoryCount++;
@@ -167,12 +167,12 @@ int write_metadata_to_disk(struct Header &mainHeader,
 }
 
 /* Create a new Metadata object */
-struct Metadata create_Metadata_object(struct Header &mainHeader,
+struct Metadata create_metadata_object(struct Header &mainHeader,
                                        std::string &fileName,
                                        std::string &pathToObject) {
 	// Getting the information about the file/directory
 	struct stat fileStat;
-	if (stat((pathToObject).c_str(), &fileStat) == -1) {
+	if (lstat((pathToObject).c_str(), &fileStat) == -1) {
 		std::cerr << "ERROR <" << errno << "> Unable to get stat info on " << pathToObject << '\n';
 	}
 
@@ -214,18 +214,26 @@ struct Metadata create_Metadata_object(struct Header &mainHeader,
 		currentMeta.offsetToFileStart = -1; // -1 for directories
 		currentMeta.softlink = 0;
 	}
-	// additional checks for symbolic links
+	// symbolic links
 	else if (S_ISLNK(fileStat.st_mode)) {
 		currentMeta.directory = 0;
 		currentMeta.file = 0;
 		currentMeta.offsetToFileStart = -1; // -1 for softlinks
 		currentMeta.softlink = 1;
+		readlink(pathToObject.c_str(), currentMeta.symLinkTarget, FILENAME_MAX);
 	}
-	// then it is a file (Maybe not a regular file)
-	else {
+	// regular file
+	else if (S_ISREG(fileStat.st_mode)) {
 		currentMeta.file = 1;
 		currentMeta.directory = 0;
 		currentMeta.offsetToFileStart = mainHeader.offsetToMeta;
+		currentMeta.softlink = 0;
+	}
+	// then it is a file (Maybe not a regular file)
+	else {
+		currentMeta.file = 0;
+		currentMeta.directory = 0;
+		currentMeta.offsetToFileStart = -1;
 		currentMeta.softlink = 0;
 	}
 	// As sizeof(string) = size of pointer to string, we have to use string.length()
@@ -243,17 +251,6 @@ struct Metadata create_Metadata_object(struct Header &mainHeader,
 	currentMeta.accessDate = fileStat.st_atime;
 	currentMeta.modifyDate = fileStat.st_mtime;
 	currentMeta.changeDate = fileStat.st_ctime;
-	/* Security present for string copy
-	   snprintf(currentMeta.inode, sizeof(currentMeta.inode), "%s", (inode).c_str());
-	   snprintf(currentMeta.fileSize, sizeof(currentMeta.fileSize), "%s", (size).c_str());
-	   snprintf(currentMeta.userID, sizeof(currentMeta.userID), "%s", (userID).c_str());
-	   snprintf(currentMeta.groupID, sizeof(currentMeta.groupID), "%s", (groupID).c_str());
-	   snprintf(currentMeta.filePermission, sizeof(currentMeta.filePermission), "%s", (mode).c_str());
-	   snprintf(currentMeta.birthDate,  sizeof(currentMeta.birthDate), "%s", (birthDate).c_str());
-	   snprintf(currentMeta.accessDate, sizeof(currentMeta.accessDate), "%s", (accessDate).c_str());
-	   snprintf(currentMeta.modifyDate, sizeof(currentMeta.modifyDate), "%s", (modifyDate).c_str());
-	   snprintf(currentMeta.changeDate, sizeof(currentMeta.changeDate), "%s", (changeDate).c_str());
-	 */
 	return currentMeta; // return the populated Metadata object
 }
 
@@ -270,7 +267,7 @@ int update_metadata_in_memory( struct Header &mainHeader,
                                char flag) {
 	/* create and populate a new Metadata object */
 	Metadata currentMeta;
-	currentMeta = create_Metadata_object(mainHeader, fileName, pathToObject);
+	currentMeta = create_metadata_object(mainHeader, fileName, pathToObject);
 	/* if flag is 'a' then search through the Global Metadata Struct to update the version
 	   if not found, push to vector */
 	if (flag == 'a') {
