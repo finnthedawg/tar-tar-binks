@@ -254,19 +254,6 @@ struct Metadata create_Metadata_object(struct Header &mainHeader,
 	   snprintf(currentMeta.modifyDate, sizeof(currentMeta.modifyDate), "%s", (modifyDate).c_str());
 	   snprintf(currentMeta.changeDate, sizeof(currentMeta.changeDate), "%s", (changeDate).c_str());
 	 */
-	/* Security not present for string copy
-	   strncpy(currentMeta.pathToObject, (pathToObject+"\0").c_str(), pathToObject.length()+1)
-	   strncpy(currentMeta.inode, (inode+"\0").c_str(), inode.length()+1);
-	   strncpy(currentMeta.fileSize, (size+"\0").c_str(), size.length()+1);
-	   strncpy(currentMeta.userID, (userID+"\0").c_str(), userID.length()+1);
-	   strncpy(currentMeta.groupID, (groupID+"\0").c_str(), groupID.length()+1);
-	   strncpy(currentMeta.filePermission, (mode+"\0").c_str(), mode.length()+1);
-	   strncpy(currentMeta.fileName, (fileName+"\0").c_str(), fileName.length()+1);
-	   strncpy(currentMeta.birthDate, (birthDate+"\0").c_str(), birthDate.length()+1);
-	   strncpy(currentMeta.accessDate, (accessDate+"\0").c_str(), accessDate.length()+1);
-	   strncpy(currentMeta.modifyDate, (modifyDate+"\0").c_str(), modifyDate.length()+1);
-	   strncpy(currentMeta.changeDate, (changeDate+"\0").c_str(), changeDate.length()+1);
-	 */
 	return currentMeta; // return the populated Metadata object
 }
 
@@ -296,10 +283,8 @@ int update_metadata_in_memory( struct Header &mainHeader,
 				version++;
 			}
 		}
-
 		currentMeta.version = version;
 		metaVector.push_back(currentMeta);
-
 	}
 	/* if flag is 'c' add to vector directly */
 	else if (flag == 'c') {
