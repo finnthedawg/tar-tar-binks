@@ -20,6 +20,29 @@ int extract_archive_version(std::fstream &archivePtr, std::vector<struct Metadat
 	return(0);
 }
 
+
+/* Filters metaVector and returns a filtered medatada with only the latest version of each meta */
+std::vector<struct Metadata> create_filtered_latest_metadata(std::vector<struct Metadata> &metaVector){
+  //The new filtered vector we will be returned
+  std::vector<struct Metadata> filtered;
+  for(std::vector<struct Metadata>::it = metaVector.begin(); it != metaVector.end(); it++){
+    filtered.push_back(*it);
+  }
+  //Begin the filter process. Each time
+  return(filtered);
+}
+
+/* Filters metaVector and returns a filtered medatada with only specified version */
+std::vector<struct Metadata> create_filtered_version_metadata(std::vector<struct Metadata> &metaVector, int version){
+  //The new filtered vector we will be returned
+  std::vector<struct Metadata> filtered;
+  for(std::vector<struct Metadata>::it = metaVector.begin(); it != metaVector.end(); it++){
+    filtered.push_back(*it);
+  }
+  //Begin the filter process. Each time
+  return(filtered);
+}
+
 /* Extracts one file or directory */
 int extract_meta_file(std::fstream &archivePtr, struct Metadata &meta){
 	char updated_pathToObject[FILENAME_MAX+1];
