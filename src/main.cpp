@@ -97,10 +97,16 @@ int main(int argc, char *argv[]) {
 		if (DEBUG) std::cout << "DEBUG -a flag used" << '\n';
 		append_archive(inputList, archivePtr, mainHeader, metaVector, 'a');
 		break;
-	case 'x': // -x extract flag with/without -o version flag TODO
+	case 'x': // -x extract flag with/without -o version flag
 		if (DEBUG) std::cout << "DEBUG -x flag used" << '\n';
-		// iterating through the inputList vector to extract all the correct version
-		extract_archive_version(archivePtr,metaVector,1);
+		/* if no version is specified then extract the latest ver of all files */
+		if (argc == 3) {
+			extract_archive_version(archivePtr,metaVector,-1);
+		}
+        /* extract all the files with the version specified by the -o flag */
+        else {
+            extract_archive_version(archivePtr,metaVector,version);
+        }
 		break;
 	case 'm': // -m print metatdata flag
 		if (DEBUG) std::cout << "DEBUG -m flag" << '\n';
@@ -149,7 +155,7 @@ bool check_cmd_args(int argc, char *argv[], std::string& archiveName,
 	}
 	// checking if -x flag used correctly
 	if ((std::string)argv[1] == "-x") {
-		if ((std::string)argv[2] == "-o" && argc >= 6) {
+		if ((std::string)argv[2] == "-o" && argc >= 5) {
 			flag = (std::string)argv[1];
 			version = std::stoi(argv[3]);
 			archiveName = (std::string)argv[4];
