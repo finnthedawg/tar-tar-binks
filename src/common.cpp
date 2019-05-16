@@ -143,7 +143,7 @@ int write_header_to_disk(struct Header &mainHeader,
 /* Read netadata from the archive file */
 int read_metadata_from_disk(std::fstream &archivePtr, struct Header &mainHeader, std::vector<struct Metadata> &metaVector){
 	archivePtr.seekg(mainHeader.offsetToMeta);    // Seek to the offset of metadata Header.offsetToMeta
-	for(int i = 0; i < mainHeader.fileCount + mainHeader.directoryCount; i++) {
+	for(int i = 0; i < mainHeader.fileCount + mainHeader.directoryCount + mainHeader.symboliclinkCount + mainHeader.otherFileCount; i++) {
 		struct Metadata meta;
 		archivePtr.read((char *)&meta, sizeof(Metadata));
 		metaVector.push_back(meta);
