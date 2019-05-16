@@ -48,10 +48,10 @@ void display_one_metadata_attrb (struct Metadata &metadata_object) {
 	std::cout << "  " << "permission " << mode_to_permission(metadata_object.filePermission) << std::endl;
 	// std::cout << "  " << "permission " << metadata_object.filePermission << std::endl;
 
-	std::cout << "  " << "uid: " << get_user_name(metadata_object.userID) << std::endl;
-	std::cout << "  " << "gid: " << get_group_name(metadata_object.groupID) << std::endl;
-	// std::cout << "  " << "uid: " << metadata_object.userID << std::endl;
-	// std::cout << "  " << "gid: " << metadata_object.groupID << std::endl;
+	// std::cout << "  " << "uid: " << get_user_name(metadata_object.userID) << std::endl;
+	// std::cout << "  " << "gid: " << get_group_name(metadata_object.groupID) << std::endl;
+	std::cout << "  " << "uid: " << metadata_object.userID << std::endl;
+	std::cout << "  " << "gid: " << metadata_object.groupID << std::endl;
 
 	std::cout << "  " << "version: " << metadata_object.version << std::endl;
 	std::cout << "  " << "size: " << metadata_object.fileSize << std::endl;

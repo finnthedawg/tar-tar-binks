@@ -10,7 +10,7 @@
 #include <dirent.h>
 #include <sys/stat.h>
 #include <sys/types.h>
-#include <uuid/uuid.h>
+// #include <uuid/uuid.h>
 #include <string>
 #include "common.h"
 
@@ -384,18 +384,18 @@ char * mode_to_permission (mode_t fileMode) {
 }
 
 /* converts uid to user name */
-std::string get_user_name (uid_t uid) {
-	struct passwd *pswrd;
-	pswrd = getpwuid(uid);
-	return pswrd->pw_name;
-}
-
-/* convertes gid to group id */
-std::string get_group_name (uid_t gid) {
-	struct group *grp;
-	grp = getgrgid(gid);
-	return grp->gr_name;
-}
+// std::string get_user_name (uid_t uid) {
+// 	struct passwd *pswrd;
+// 	pswrd = getpwuid(uid);
+// 	return pswrd->pw_name;
+// }
+//
+// /* convertes gid to group id */
+// std::string get_group_name (uid_t gid) {
+// 	struct group *grp;
+// 	grp = getgrgid(gid);
+// 	return grp->gr_name;
+// }
 
 /*  Extracts file name from pathToObject
     Utility code from
