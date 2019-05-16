@@ -40,18 +40,20 @@ std::vector<struct Metadata> create_filtered_latest_metadata(std::vector<struct 
   for(std::vector<struct Metadata>::iterator it = metaVector.begin(); it != metaVector.end(); it++){
     copy.push_back(*it);
   }
+  //if (DEBUG) std::cout << "DEBUG There are this many files and dirs: " << copy.size() << '\n';
+  if (DEBUG) std::cout << "DEBUG filter done copying " << '\n';
   //Sorting
   std::sort(copy.begin(), copy.end(), [](struct Metadata meta1, struct Metadata meta2){
     return meta1.version > meta2.version;
   });
+  if (DEBUG) std::cout << "DEBUG filter function done sorting " << '\n';
   //Checking if it already exists
   for(std::vector<struct Metadata>::iterator it = copy.begin(); it != copy.end(); it++){
+    if (DEBUG) std::cout << "DEBUG filter checking " << (*it).pathToObject << '\n';
     //See if this exists in output filtered vector
-    std::vector<struct Metadata>::iterator out_it = std::find_if(filtered.begin(), filtered.end(), [](struct Metadata meta){
+    std::vector<struct Metadata>::iterator out_it = std::find_if(filtered.begin(), filtered.end(), [=](struct Metadata meta){
       std::string filtered(meta.pathToObject); //In output results
-      std::string sorted(meta.pathToObject); //Searching for this
-      std::cout << "filtered " << filtered << std::endl;
-      std::cout << "filtered " << sorted << std::endl;
+      std::string sorted(it->pathToObject); //Searching for this
       if (filtered.compare(sorted) == 0){
         return(1); // meta found
       } else {
@@ -59,10 +61,12 @@ std::vector<struct Metadata> create_filtered_latest_metadata(std::vector<struct 
       }
     });
     //If doesn't, then add it to output filtered vector
-    if (out_it != filtered.end()){
+    if (out_it == filtered.end()){
+      if (DEBUG) std::cout << "Doesnt exist, pushing back " << (*it).pathToObject << '\n';
       filtered.push_back(*it);
     }
   }
+  if (DEBUG) std::cout << "DEBUG filter done filtering " << '\n';
   return(filtered);
 }
 
