@@ -48,19 +48,20 @@ void display_one_metadata_attrb (struct Metadata &metadata_object) {
 	std::cout << "  " << "permission " << mode_to_permission(metadata_object.filePermission) << std::endl;
 	// std::cout << "  " << "permission " << metadata_object.filePermission << std::endl;
 
-	// std::cout << "  " << "uid: " << get_user_name(metadata_object.userID) << std::endl;
-	// std::cout << "  " << "gid: " << get_group_name(metadata_object.groupID) << std::endl;
+	#if defined(__APPLE__) && defined(__MACH__)
+	std::cout << "  " << "uid: " << get_user_name(metadata_object.userID) << std::endl;
+	std::cout << "  " << "gid: " << get_group_name(metadata_object.groupID) << std::endl;
+	#elif defined(__linux__)
 	std::cout << "  " << "uid: " << metadata_object.userID << std::endl;
 	std::cout << "  " << "gid: " << metadata_object.groupID << std::endl;
+	#endif
 
 	std::cout << "  " << "version: " << metadata_object.version << std::endl;
 	std::cout << "  " << "size: " << metadata_object.fileSize << std::endl;
 
-	std::cout << "  " << "creation time: " << unix_time_to_date(metadata_object.birthDate) << std::endl;
 	std::cout << "  " << "access time: " << unix_time_to_date(metadata_object.accessDate) << std::endl;
 	std::cout << "  " << "modify time: " << unix_time_to_date(metadata_object.modifyDate) << std::endl;
 	std::cout << "  " << "change time: " << unix_time_to_date(metadata_object.changeDate) << std::endl;
-	// std::cout << "  " << "birthtime: " << metadata_object.birthDate << std::endl;
 	// std::cout << "  " << "accesstime: " << metadata_object.accessDate << std::endl;
 	// std::cout << "  " << "modifytime: " << metadata_object.modifyDate << std::endl;
 	// std::cout << "  " << "changetime: " << metadata_object.changeDate << std::endl;

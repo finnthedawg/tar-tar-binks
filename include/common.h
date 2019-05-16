@@ -44,7 +44,6 @@ struct Metadata {
 	time_t accessDate;
 	time_t modifyDate;
 	time_t changeDate;
-	time_t birthDate;
 	ino_t inode;
 };
 

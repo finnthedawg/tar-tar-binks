@@ -10,7 +10,9 @@
 #include <dirent.h>
 #include <sys/stat.h>
 #include <sys/types.h>
-// #include <uuid/uuid.h>
+#if defined(__APPLE__) && defined(__MACH__)
+#include <uuid/uuid.h>
+#endif
 #include <string>
 #include "common.h"
 
@@ -55,7 +57,7 @@ int add_objects_to_archive(std::vector<std::string> inputList, std::fstream &arc
 			}
 		}
 		else {
-			std::cerr << "ERROR: in opening stat " << strerror(errno) << '\n';
+			std::cerr << "ERROR: in opening stat " << errno << '\n';
 		}
 		iterate_through_dir(inputList[i], archivePtr, mainHeader, metaVector, flag);
 	}
@@ -78,7 +80,7 @@ void iterate_through_dir(std::string &baseDirName,
 	/* if there is an error in opening the dir stream */
 	dirPtr = opendir(baseDirName.c_str());
 	if (dirPtr == nullptr) {
-		std::cerr << "ERROR <" << strerror(errno) <<  "> Unable to open " << baseDirName << std::endl;
+		std::cerr << "ERROR <" << errno <<  "> Unable to open " << baseDirName << std::endl;
 	}
 	else {
 		if (DEBUG) std::cout << "DEBUG " << "Opening " << baseDirName << std::endl;
@@ -188,7 +190,6 @@ struct Metadata create_metadata_object(struct Header &mainHeader,
 	accessDate = std::to_string(fileStat.st_atime);
 	modifyDate = std::to_string(fileStat.st_mtime);
 	changeDate = std::to_string(fileStat.st_ctime);
-	birthDate = std::to_string(fileStat.st_birthtime);
 	inode = std::to_string(fileStat.st_ino);
 	numLinks = fileStat.st_nlink;
 
@@ -203,7 +204,6 @@ struct Metadata create_metadata_object(struct Header &mainHeader,
 		std::cout << "    DEBUG Last access date: " << fileStat.st_atime << std::endl;
 		std::cout << "    DEBUG Last modification date: " << fileStat.st_mtime << std::endl;
 		std::cout << "    DEBUG Last change date: " << fileStat.st_ctime << std::endl;
-		std::cout << "    DEBUG Birth / creation date: " << fileStat.st_birthtime << std::endl;
 	}
 
 	Metadata currentMeta;
@@ -247,7 +247,6 @@ struct Metadata create_metadata_object(struct Header &mainHeader,
 	currentMeta.userID = fileStat.st_uid;
 	currentMeta.groupID = fileStat.st_gid;
 	currentMeta.filePermission = fileStat.st_mode;
-	currentMeta.birthDate = fileStat.st_birthtime;
 	currentMeta.accessDate = fileStat.st_atime;
 	currentMeta.modifyDate = fileStat.st_mtime;
 	currentMeta.changeDate = fileStat.st_ctime;
@@ -384,18 +383,20 @@ char * mode_to_permission (mode_t fileMode) {
 }
 
 /* converts uid to user name */
-// std::string get_user_name (uid_t uid) {
-// 	struct passwd *pswrd;
-// 	pswrd = getpwuid(uid);
-// 	return pswrd->pw_name;
-// }
-//
-// /* convertes gid to group id */
-// std::string get_group_name (uid_t gid) {
-// 	struct group *grp;
-// 	grp = getgrgid(gid);
-// 	return grp->gr_name;
-// }
+#if defined(__APPLE__) && defined(__MACH__)
+std::string get_user_name (uid_t uid) {
+	struct passwd *pswrd;
+	pswrd = getpwuid(uid);
+	return pswrd->pw_name;
+}
+
+/* convertes gid to group id */
+std::string get_group_name (uid_t gid) {
+	struct group *grp;
+	grp = getgrgid(gid);
+	return grp->gr_name;
+}
+#endif
 
 /*  Extracts file name from pathToObject
     Utility code from
