@@ -21,18 +21,18 @@ int extract_archive_version(std::fstream &archivePtr, std::vector<struct Metadat
 	}
 
 	/* Extract all the required files */
-  //First go through and extract all files and hard linkes
+	//First go through and extract all files and hard linkes
 	for(std::vector<struct Metadata>::iterator it = filtered.begin(); it != filtered.end(); ++it) {
-    if(it->softlink == 0){
-      extract_meta_file(archivePtr, *it);
-    }
+		if(it->softlink == 0) {
+			extract_meta_file(archivePtr, *it);
+		}
 	}
 
-  //Then extract all soft links
-  for(std::vector<struct Metadata>::iterator it = filtered.begin(); it != filtered.end(); ++it) {
-    if(it->softlink == 1){
-      extract_meta_softlink(archivePtr, *it);
-    }
+	//Then extract all soft links
+	for(std::vector<struct Metadata>::iterator it = filtered.begin(); it != filtered.end(); ++it) {
+		if(it->softlink == 1) {
+			extract_meta_softlink(archivePtr, *it);
+		}
 	}
 	return(0);
 }
@@ -119,25 +119,25 @@ int extract_meta_file(std::fstream &archivePtr, struct Metadata &meta){
 		diskPtr.imbue(std::locale::classic());
 		diskPtr.open(updated_pathToObject, std::ios::app | std::ios::binary);
 		archivePtr.seekg(meta.offsetToFileStart, archivePtr.beg); //Seek to the correct position in
-    // Old method of reading to a buffer
+		// Old method of reading to a buffer
 		// int readAmount = 0; int i=0;
 		// do {
-		// 	i += 1024;
-		// 	//If I exceeds file size, then i is the file size.
-		// 	if (i > meta.fileSize) {
-		// 		i = meta.fileSize;
-		// 	}
-		// 	readAmount = i%1025;
-		// 	archivePtr.read(buf,readAmount);
-		// 	diskPtr.write(buf, readAmount);
-    //   std::cout << buf;
+		//  i += 1024;
+		//  //If I exceeds file size, then i is the file size.
+		//  if (i > meta.fileSize) {
+		//      i = meta.fileSize;
+		//  }
+		//  readAmount = i%1025;
+		//  archivePtr.read(buf,readAmount);
+		//  diskPtr.write(buf, readAmount);
+		//   std::cout << buf;
 		// } while (i < meta.fileSize);
 
-    for(int i = 0; i < meta.fileSize; i++){
-      char buffer;
-      buffer = (char) archivePtr.get();
-      diskPtr.put(buffer);
-    }
+		for(int i = 0; i < meta.fileSize; i++) {
+			char buffer;
+			buffer = (char) archivePtr.get();
+			diskPtr.put(buffer);
+		}
 
 		diskPtr.close();
 		chmod(updated_pathToObject, meta.filePermission);
@@ -151,51 +151,51 @@ int extract_meta_softlink(std::fstream &archivePtr, struct Metadata &meta){
 	strcpy(updated_pathToObject, "test");
 	strcat(updated_pathToObject, meta.pathToObject);
 
-  char updated_pathTosymlink[FILENAME_MAX+1];
-  strcpy(updated_pathTosymlink, "test");
-  strcat(updated_pathTosymlink, meta.symLinkTarget);
+	char updated_pathTosymlink[FILENAME_MAX+1];
+	strcpy(updated_pathTosymlink, "test");
+	strcat(updated_pathTosymlink, meta.symLinkTarget);
 
 	if (DEBUG) std::cout << "Extracting file with symbolic link " << updated_pathToObject << "  version " << meta.version << '\n';
 	//char buf[1024] = ""; //Buffer used when reading from archive.
 	// If this is a directory we don't need to copy file.
-  symlink(updated_pathTosymlink, updated_pathToObject);
+	symlink(updated_pathTosymlink, updated_pathToObject);
 
 	// if (meta.directory == 1) {
-  //   symlink(const char  *name1, meta.updated_pathToObject);
-	// 	return(0);
+	//   symlink(const char  *name1, meta.updated_pathToObject);
+	//  return(0);
 	// } else {
-	// 	// Copy all data of archive to the output directory
-	// 	std::fstream diskPtr;
-	// 	std::string pathonly(updated_pathToObject);
-	// 	pathonly = get_pathonly_from_path(pathonly);
-	// 	const char * pathonly_const = pathonly.c_str();
-	// 	std::cout << "found file, creating the directory" << pathonly_const << std::endl;
-	// 	mkdir(pathonly_const,S_IRWXU | S_IRWXG | S_IROTH | S_IXOTH); //If the directory doest exist, create it with temp permissions.
-	// 	diskPtr.imbue(std::locale::classic());
-	// 	diskPtr.open(updated_pathToObject, std::ios::app | std::ios::binary);
-	// 	archivePtr.seekg(meta.offsetToFileStart, archivePtr.beg); //Seek to the correct position in
-  //   // Old method of reading to a buffer
-	// 	// int readAmount = 0; int i=0;
-	// 	// do {
-	// 	// 	i += 1024;
-	// 	// 	//If I exceeds file size, then i is the file size.
-	// 	// 	if (i > meta.fileSize) {
-	// 	// 		i = meta.fileSize;
-	// 	// 	}
-	// 	// 	readAmount = i%1025;
-	// 	// 	archivePtr.read(buf,readAmount);
-	// 	// 	diskPtr.write(buf, readAmount);
-  //   //   std::cout << buf;
-	// 	// } while (i < meta.fileSize);
-  //
-  //   for(int i = 0; i < meta.fileSize; i++){
-  //     char buffer;
-  //     buffer = (char) archivePtr.get();
-  //     diskPtr.put(buffer);
-  //   }
-  //
-	// 	diskPtr.close();
-	// 	chmod(updated_pathToObject, meta.filePermission);
+	//  // Copy all data of archive to the output directory
+	//  std::fstream diskPtr;
+	//  std::string pathonly(updated_pathToObject);
+	//  pathonly = get_pathonly_from_path(pathonly);
+	//  const char * pathonly_const = pathonly.c_str();
+	//  std::cout << "found file, creating the directory" << pathonly_const << std::endl;
+	//  mkdir(pathonly_const,S_IRWXU | S_IRWXG | S_IROTH | S_IXOTH); //If the directory doest exist, create it with temp permissions.
+	//  diskPtr.imbue(std::locale::classic());
+	//  diskPtr.open(updated_pathToObject, std::ios::app | std::ios::binary);
+	//  archivePtr.seekg(meta.offsetToFileStart, archivePtr.beg); //Seek to the correct position in
+	//   // Old method of reading to a buffer
+	//  // int readAmount = 0; int i=0;
+	//  // do {
+	//  //  i += 1024;
+	//  //  //If I exceeds file size, then i is the file size.
+	//  //  if (i > meta.fileSize) {
+	//  //      i = meta.fileSize;
+	//  //  }
+	//  //  readAmount = i%1025;
+	//  //  archivePtr.read(buf,readAmount);
+	//  //  diskPtr.write(buf, readAmount);
+	//   //   std::cout << buf;
+	//  // } while (i < meta.fileSize);
+	//
+	//   for(int i = 0; i < meta.fileSize; i++){
+	//     char buffer;
+	//     buffer = (char) archivePtr.get();
+	//     diskPtr.put(buffer);
+	//   }
+	//
+	//  diskPtr.close();
+	//  chmod(updated_pathToObject, meta.filePermission);
 	// }
 	return(0);
 }
