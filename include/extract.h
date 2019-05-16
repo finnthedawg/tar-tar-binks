@@ -14,3 +14,6 @@ std::vector<struct Metadata> create_filtered_version_metadata(std::vector<struct
 
 /* Extracts one file or directory */
 int extract_meta_file(std::fstream &archivePtr, struct Metadata &meta);
+
+/* Extract one softlink meta */
+int extract_meta_softlink(std::fstream &archivePtr, struct Metadata &meta);

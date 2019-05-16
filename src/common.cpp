@@ -199,7 +199,7 @@ struct Metadata create_metadata_object(struct Header &mainHeader,
 		std::cout << "    DEBUG Group ID: " << fileStat.st_gid << std::endl;
 		std::cout << "    DEBUG Mode: " << fileStat.st_mode << std::endl;
 		std::cout << "    DEBUG Size: " << fileStat.st_size << std::endl;
-		std::cout << "    DEBUG Number of links to the object: " << fileStat.st_nlink << std::endl;
+		std::cout << "    DEBUG Number of links to the object: " << numLinks << std::endl;
 		std::cout << "    DEBUG Inode number: " << fileStat.st_ino << std::endl;
 		std::cout << "    DEBUG Last access date: " << fileStat.st_atime << std::endl;
 		std::cout << "    DEBUG Last modification date: " << fileStat.st_mtime << std::endl;
