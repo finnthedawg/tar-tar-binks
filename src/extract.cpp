@@ -4,6 +4,7 @@
 #include <fstream>
 #include <iostream>
 #include <sys/stat.h>
+#include <algorithm>
 #include <unistd.h> // For symlink
 #include "extract.h"
 #include "common.h"
@@ -54,7 +55,7 @@ std::vector<struct Metadata> create_filtered_latest_metadata(std::vector<struct 
 	//if (DEBUG) std::cout << "DEBUG There are this many files and dirs: " << copy.size() << '\n';
 	if (DEBUG) std::cout << "DEBUG filter done copying " << '\n';
 	//Sorting
-	std::sort(copy.begin(), copy.end(), [](struct Metadata meta1, struct Metadata meta2){
+	sort(copy.begin(), copy.end(), [](struct Metadata meta1, struct Metadata meta2){
 		return meta1.version > meta2.version;
 	});
 	if (DEBUG) std::cout << "DEBUG filter function done sorting " << '\n';
@@ -62,10 +63,10 @@ std::vector<struct Metadata> create_filtered_latest_metadata(std::vector<struct 
 	for(std::vector<struct Metadata>::iterator it = copy.begin(); it != copy.end(); it++) {
 		if (DEBUG) std::cout << "DEBUG filter checking " << (*it).pathToObject << '\n';
 		//See if this exists in output filtered vector
-		std::vector<struct Metadata>::iterator out_it = std::find_if(filtered.begin(), filtered.end(), [=](struct Metadata meta){
-			std::string filtered(meta.pathToObject); //In output results
-			std::string sorted(it->pathToObject); //Searching for this
-			if (filtered.compare(sorted) == 0) {
+		std::vector<struct Metadata>::iterator out_it = find_if(filtered.begin(), filtered.end(), [=](struct Metadata meta){
+			std::string filteredPath(meta.pathToObject); //In output results
+			std::string sortedPath(it->pathToObject); //Searching for this
+			if (filteredPath.compare(sortedPath) == 0) {
 			    return(1); // meta found
 			} else {
 			    return(0); //meta not found
@@ -97,8 +98,8 @@ std::vector<struct Metadata> create_filtered_version_metadata(std::vector<struct
 /* Extracts one file or directory */
 int extract_meta_file(std::fstream &archivePtr, struct Metadata &meta){
 	char updated_pathToObject[FILENAME_MAX+1];
-	strcpy(updated_pathToObject, "test");
-	strcat(updated_pathToObject, meta.pathToObject);
+	std::strcpy(updated_pathToObject, "test");
+	std::strcat(updated_pathToObject, meta.pathToObject);
 
 	if (DEBUG) std::cout << "Extracting " << updated_pathToObject << "  version " << meta.version << '\n';
 	//char buf[1024] = ""; //Buffer used when reading from archive.
@@ -148,12 +149,12 @@ int extract_meta_file(std::fstream &archivePtr, struct Metadata &meta){
 /* Extracts one file or directory */
 int extract_meta_softlink(std::fstream &archivePtr, struct Metadata &meta){
 	char updated_pathToObject[FILENAME_MAX+1];
-	strcpy(updated_pathToObject, "test");
-	strcat(updated_pathToObject, meta.pathToObject);
+	std::strcpy(updated_pathToObject, "test");
+	std::strcat(updated_pathToObject, meta.pathToObject);
 
 	char updated_pathTosymlink[FILENAME_MAX+1];
-	strcpy(updated_pathTosymlink, "test");
-	strcat(updated_pathTosymlink, meta.symLinkTarget);
+	std::strcpy(updated_pathTosymlink, "test");
+	std::strcat(updated_pathTosymlink, meta.symLinkTarget);
 
 	if (DEBUG) std::cout << "Extracting file with symbolic link " << updated_pathToObject << "  version " << meta.version << '\n';
 	//char buf[1024] = ""; //Buffer used when reading from archive.
