@@ -50,6 +50,8 @@ std::vector<struct Metadata> create_filtered_latest_metadata(std::vector<struct 
     std::vector<struct Metadata>::iterator out_it = std::find_if(filtered.begin(), filtered.end(), [](struct Metadata meta){
       std::string filtered(meta.pathToObject); //In output results
       std::string sorted(meta.pathToObject); //Searching for this
+      std::cout << "filtered " << filtered << std::endl;
+      std::cout << "filtered " << sorted << std::endl;
       if (filtered.compare(sorted) == 0){
         return(1); // meta found
       } else {
@@ -88,11 +90,17 @@ int extract_meta_file(std::fstream &archivePtr, struct Metadata &meta){
 	// If this is a directory we don't need to copy file.
 	if (meta.directory == 1) {
 		mkdir(updated_pathToObject,meta.filePermission);
+    chmod(updated_pathToObject,meta.filePermission);
 		return(0);
 	}
 	else {
 		// Copy all data of archive to the output directory
 		std::fstream diskPtr;
+    std::string pathonly(updated_pathToObject);
+    pathonly = get_pathonly_from_path(pathonly);
+    const char * pathonly_const = pathonly.c_str();
+    std::cout << "found file, creating the directory" << pathonly_const << std::endl;
+    mkdir(pathonly_const,S_IRWXU | S_IRWXG | S_IROTH | S_IXOTH); //If the directory doest exist, create it with temp permissions.
 		diskPtr.imbue(std::locale::classic());
 		diskPtr.open(updated_pathToObject, std::ios::app | std::ios::binary);
 		archivePtr.seekg(meta.offsetToFileStart, archivePtr.beg); //Seek to the correct position in
