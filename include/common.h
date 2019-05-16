@@ -128,5 +128,5 @@ std::string get_group_name (uid_t gid);
     Utility code from
    C++ Cookbook by Jeff Cogswell, Jonathan Turkanis, Christopher Diggins, D. Ryan Stephens */
 std::string get_filename_from_path(std::string &pathToObject);
-
+std::string get_pathonly_from_path(std::string &pathToObject);
 #endif

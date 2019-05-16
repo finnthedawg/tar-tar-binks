@@ -412,3 +412,17 @@ std::string get_filename_from_path(std::string &pathToObject) {
 	}
 	return(pathToObject); // if no / or \\ were found, return original name
 }
+
+std::string get_pathonly_from_path(std::string &pathToObject) {
+  char sep = '/';
+	#ifdef _WIN32 // for windows
+	sep = '\\';
+	#endif
+
+  std::string directory;
+  const size_t last_slash_idx = pathToObject.rfind(sep);
+  if (std::string::npos != last_slash_idx) {
+      directory = pathToObject.substr(0, last_slash_idx);
+  }
+  return(directory);
+}
