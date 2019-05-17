@@ -23,25 +23,25 @@ int extract_archive_version(std::fstream &archivePtr, std::vector<struct Metadat
 		filtered = create_filtered_version_metadata(metaVector, version);
 	}
 
-  //First go through and extract all files. Don't extract files which had the same Inode. (hard link)
-  std::vector<ino_t> seenInodes;
+	//First go through and extract all files. Don't extract files which had the same Inode. (hard link)
+	std::vector<ino_t> seenInodes;
 	for(std::vector<struct Metadata>::iterator it = filtered.begin(); it != filtered.end(); ++it) {
 		if(it->softlink == 0) {
 			extract_meta_file(archivePtr, *it);
 		}
 	}
 
-  // for(std::vector<struct Metadata>::iterator it = filtered.begin(); it != filtered.end(); ++it) {
-  //   if(it->softlink == 0){
-  //     extract_meta_file(archivePtr, *it);
-  //   }
+	// for(std::vector<struct Metadata>::iterator it = filtered.begin(); it != filtered.end(); ++it) {
+	//   if(it->softlink == 0){
+	//     extract_meta_file(archivePtr, *it);
+	//   }
 	// }
 
-  //Then extract all soft links
-  for(std::vector<struct Metadata>::iterator it = filtered.begin(); it != filtered.end(); ++it) {
-    if(it->softlink == 1){
-      extract_meta_softlink(archivePtr, *it);
-    }
+	//Then extract all soft links
+	for(std::vector<struct Metadata>::iterator it = filtered.begin(); it != filtered.end(); ++it) {
+		if(it->softlink == 1) {
+			extract_meta_softlink(archivePtr, *it);
+		}
 	}
 	return(0);
 }
@@ -165,7 +165,7 @@ int extract_meta_softlink(std::fstream &archivePtr, struct Metadata &meta){
 	strcat(updated_pathTosymlink, meta.symLinkTarget);
 
 	if (DEBUG) std::cout << "Extracting file with symbolic link " << updated_pathToObject << "  version " << meta.version << '\n';
-  symlink(updated_pathTosymlink, updated_pathToObject);
+	symlink(updated_pathTosymlink, updated_pathToObject);
 
 	return(0);
 }
