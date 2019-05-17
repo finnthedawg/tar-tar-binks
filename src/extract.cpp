@@ -1,6 +1,7 @@
 #include <cstdio>
 #include <vector>
 #include <string>
+#include <cstring>
 #include <fstream>
 #include <iostream>
 #include <sys/stat.h>

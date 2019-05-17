@@ -71,7 +71,7 @@ int main(int argc, char *argv[]) {
 
 	/* If any other flag than the -c create flag is used. We must read the Metadata from the archive first */
 	if (flag[1] != 'c') { //If not creating archive, parse the information
-		if (file_size(archivePtr) <= sizeof(mainHeader)) {
+		if (file_size(archivePtr) <= (int)sizeof(mainHeader)) {
 			std::cerr << "Empty archive\n";
 			exit(-1);
 		}
@@ -148,7 +148,7 @@ bool check_cmd_args(int argc, char *argv[], std::string& archiveName,
 	if (argc < 3) return false;
 	if ((std::string)argv[1] == "-c" && argc < 4) return false;   // checking if -c flag used correctly
 	std::set<std::string> vFlag = {"-c", "-a", "-x", "-m", "-p"}; // set of valid flags
-	if (vFlag.find(argv[1]) != vFlag.end()== false) {             // checks if the entered flag is valid
+	if ((vFlag.find(argv[1]) != vFlag.end())== false) {             // checks if the entered flag is valid
 		return false;
 	}
 	// checking if -x flag used correctly
