@@ -4,7 +4,7 @@ ODIR =obj# object file directory
 CPPC =g++# compiler used
 CFLAGS =-std=c++11 -Wall -Wshadow -Werror -I$(IDIR)# compiler flags
 LDFLAGS =# -lm library flags
-TARGET = tartar # file executable generated
+TARGET = adtar # file executable generated
 
 # Getting the list of all c and object files
 SOURCES := $(wildcard $(SDIR)/*.cpp)
