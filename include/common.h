@@ -23,6 +23,7 @@ struct Metadata {
 	/* file information stored in inode */
 	char fileName[FILENAME_MAX];
 	char symLinkTarget[FILENAME_MAX]; // target path of file symlink points to, empty for normal files/folders
+	char hardLinkTarget[FILENAME_MAX]; // path of the target hardlink. This happens to one of the hardlink files
 
 	/* uncomment the part below for storing metatdata obj attrbs as chars */
 	// char userID[20];

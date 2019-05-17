@@ -24,18 +24,38 @@ int extract_archive_version(std::fstream &archivePtr, std::vector<struct Metadat
 	}
 
 	//First go through and extract all files. Don't extract files which had the same Inode. (hard link)
-	std::vector<ino_t> seenInodes;
+  std::vector<struct Metadata> seenInodes;
+  std::vector<struct Metadata> hardlinkTargets;
 	for(std::vector<struct Metadata>::iterator it = filtered.begin(); it != filtered.end(); ++it) {
 		if(it->softlink == 0) {
-			extract_meta_file(archivePtr, *it);
+      std::vector<struct Metadata>::iterator found = find_if(seenInodes.begin(), seenInodes.end(), [=](struct Metadata meta){
+        if (DEBUG) std::cout << "Inode"<< meta.inode << '\n';
+        if (meta.inode == it->inode){
+          if (DEBUG) std::cout << "DUPLICATE INODE"<< meta.inode << '\n';
+          return 1;
+        } else {
+          return 0;
+        }
+      });
+      //If we don't find the Inode, then we add this Inode and extract
+      if(found == seenInodes.end()){
+        seenInodes.push_back(*it);
+        extract_meta_file(archivePtr, *it);
+      } else{
+        //If we have seen this inode, add to vector of hardlinks we will use next.
+        strcpy(it->hardLinkTarget, found->pathToObject);
+        hardlinkTargets.push_back(*it);
+      }
 		}
 	}
 
-	// for(std::vector<struct Metadata>::iterator it = filtered.begin(); it != filtered.end(); ++it) {
-	//   if(it->softlink == 0){
-	//     extract_meta_file(archivePtr, *it);
-	//   }
-	// }
+//Now we extract hard links that have inodes in seenInodes;
+  for(std::vector<struct Metadata>::iterator it = hardlinkTargets.begin(); it != hardlinkTargets.end(); ++it) {
+    if(it->softlink == 0){
+
+      extract_meta_hardlink(archivePtr, *it);
+    }
+	}
 
 	//Then extract all soft links
 	for(std::vector<struct Metadata>::iterator it = filtered.begin(); it != filtered.end(); ++it) {
@@ -154,7 +174,7 @@ int extract_meta_file(std::fstream &archivePtr, struct Metadata &meta){
 	return(0);
 }
 
-/* Extracts one file or directory */
+/* Creates a softlink to a file*/
 int extract_meta_softlink(std::fstream &archivePtr, struct Metadata &meta){
 	char updated_pathToObject[FILENAME_MAX+1];
 	strcpy(updated_pathToObject, "test");
@@ -166,6 +186,22 @@ int extract_meta_softlink(std::fstream &archivePtr, struct Metadata &meta){
 
 	if (DEBUG) std::cout << "Extracting file with symbolic link " << updated_pathToObject << "  version " << meta.version << '\n';
 	symlink(updated_pathTosymlink, updated_pathToObject);
+
+	return(0);
+}
+
+/* Creates a hardlink to a file */
+int extract_meta_hardlink(std::fstream &archivePtr, struct Metadata &meta){
+	char updated_pathToObject[FILENAME_MAX+1];
+	strcpy(updated_pathToObject, "test");
+	strcat(updated_pathToObject, meta.pathToObject);
+
+  char updated_hardLinkTarget[FILENAME_MAX+1];
+	strcpy(updated_hardLinkTarget, "test");
+	strcat(updated_hardLinkTarget, meta.hardLinkTarget);
+
+	if (DEBUG) std::cout << "Extracting file with hard link " << updated_hardLinkTarget << "  version " << meta.version << '\n';
+	link(updated_hardLinkTarget, updated_pathToObject);
 
 	return(0);
 }

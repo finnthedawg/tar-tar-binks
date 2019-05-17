@@ -17,3 +17,6 @@ int extract_meta_file(std::fstream &archivePtr, struct Metadata &meta);
 
 /* Extract one softlink meta */
 int extract_meta_softlink(std::fstream &archivePtr, struct Metadata &meta);
+
+/* Creates a hardlink to a file */
+int extract_meta_hardlink(std::fstream &archivePtr, struct Metadata &meta);
