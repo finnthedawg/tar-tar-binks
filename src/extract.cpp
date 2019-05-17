@@ -105,8 +105,8 @@ std::vector<struct Metadata> create_filtered_version_metadata(std::vector<struct
 /* Extracts one file or directory */
 int extract_meta_file(std::fstream &archivePtr, struct Metadata &meta){
 	char updated_pathToObject[FILENAME_MAX+1];
-	std::string::strcpy(updated_pathToObject, "test");
-	std::string::strcat(updated_pathToObject, meta.pathToObject);
+	strcpy(updated_pathToObject, "test");
+	strcat(updated_pathToObject, meta.pathToObject);
 
 	if (DEBUG) std::cout << "Extracting " << updated_pathToObject << "  version " << meta.version << '\n';
 	//char buf[1024] = ""; //Buffer used when reading from archive.
@@ -118,8 +118,8 @@ int extract_meta_file(std::fstream &archivePtr, struct Metadata &meta){
 	}
 	else {
 		// Copy all data of archive to the output directory
-		std::string::fstream diskPtr;
-		std::string::string pathonly(updated_pathToObject);
+		std::fstream diskPtr;
+		std::string pathonly(updated_pathToObject);
 		pathonly = get_pathonly_from_path(pathonly);
 		const char * pathonly_const = pathonly.c_str();
 		std::cout << "found file, creating the directory" << pathonly_const << std::endl;
@@ -156,12 +156,12 @@ int extract_meta_file(std::fstream &archivePtr, struct Metadata &meta){
 /* Extracts one file or directory */
 int extract_meta_softlink(std::fstream &archivePtr, struct Metadata &meta){
 	char updated_pathToObject[FILENAME_MAX+1];
-	std::string::strcpy(updated_pathToObject, "test");
-	std::string::strcat(updated_pathToObject, meta.pathToObject);
+	strcpy(updated_pathToObject, "test");
+	strcat(updated_pathToObject, meta.pathToObject);
 
 	char updated_pathTosymlink[FILENAME_MAX+1];
-	std::string::strcpy(updated_pathTosymlink, "test");
-	std::string::strcat(updated_pathTosymlink, meta.symLinkTarget);
+	strcpy(updated_pathTosymlink, "test");
+	strcat(updated_pathTosymlink, meta.symLinkTarget);
 
 	if (DEBUG) std::cout << "Extracting file with symbolic link " << updated_pathToObject << "  version " << meta.version << '\n';
   symlink(updated_pathTosymlink, updated_pathToObject);
