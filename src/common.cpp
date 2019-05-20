@@ -193,7 +193,7 @@ struct Metadata create_metadata_object(struct Header &mainHeader,
 	inode = std::to_string(fileStat.st_ino);
 	numLinks = fileStat.st_nlink;
 
-	if (DEBUG==0) {
+	if (DEBUG) {
 		std::cout << "DEBUG File name: " << pathToObject << std::endl;
 		std::cout << "    DEBUG User ID: " << fileStat.st_uid << std::endl;
 		std::cout << "    DEBUG Group ID: " << fileStat.st_gid << std::endl;
@@ -316,10 +316,8 @@ int append_file_to_disk(std::fstream &archivePtr,
 	/* appends file to current pffsetToMeta */
 	std::ifstream readFile;  // open a input file stream
 	readFile.open(pathToObject, std::ios::binary);
-	if (DEBUG==0) std::cout << "DEBUG 1 Current FILE writer ptr loc in archivePtr is " << archivePtr.tellp() << std::endl;
 	archivePtr.clear();
 	archivePtr.seekp(mainHeader.offsetToMeta); // set pointer to the start of the offsetToMeta
-	if (DEBUG==0) std::cout << "DEBUG   2 Current FILE writer ptr loc in archivePtr is " << archivePtr.tellp() << std::endl;
 
 	/* Write the content to the archive */
 	if (readFile.is_open()) {
@@ -339,7 +337,6 @@ int append_file_to_disk(std::fstream &archivePtr,
 		          << pathToObject << " for writing." << std::endl;
 		return -1;
 	}
-	if (DEBUG==0) std::cout << "DEBUG     3 Current FILE writer ptr loc in archivePtr is " << archivePtr.tellp() << std::endl;
 	return 0;
 }
 
