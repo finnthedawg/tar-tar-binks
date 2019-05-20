@@ -12,10 +12,6 @@
 /* Implementation for -p flag*/
 /* display heirarchy of all objects in metaVector */
 void display_hierarchy_from_archive (std::vector <struct Metadata> &metaVector) {
-	/* Print the hierarchy along with the version */
-	for(std::vector<int>::size_type i = 0; i != metaVector.size(); i++) {
-		std::cout << metaVector[i].pathToObject << " version: " <<  metaVector[i].version << '\n';
-	}
 	/* Sort the metadata based on the directory, and then the version */
 	sort(metaVector.begin(), metaVector.end(), [](struct Metadata meta1, struct Metadata meta2){
 		std::string path1(meta1.pathToObject);
