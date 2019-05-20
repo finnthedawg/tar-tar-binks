@@ -28,7 +28,6 @@ void display_hierarchy_from_archive (std::vector <struct Metadata> &metaVector) 
 			//std::cout << "version 2 " << meta2.version << std::endl;
 		    return ((int)(meta1.version < meta2.version));
 		} else {
-			std::cout << "Got 2" << std::endl;
 			if(path1.compare(path2) < 0){
 				return 1;
 			} else {

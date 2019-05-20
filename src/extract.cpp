@@ -148,19 +148,6 @@ int extract_meta_file(std::fstream &archivePtr, struct Metadata &meta){
 		diskPtr.imbue(std::locale::classic());
 		diskPtr.open(updated_pathToObject, std::ios::app | std::ios::binary);
 		archivePtr.seekg(meta.offsetToFileStart, archivePtr.beg); //Seek to the correct position in
-		// Old method of reading to a buffer
-		// int readAmount = 0; int i=0;
-		// do {
-		//  i += 1024;
-		//  //If I exceeds file size, then i is the file size.
-		//  if (i > meta.fileSize) {
-		//      i = meta.fileSize;
-		//  }
-		//  readAmount = i%1025;
-		//  archivePtr.read(buf,readAmount);
-		//  diskPtr.write(buf, readAmount);
-		//   std::cout << buf;
-		// } while (i < meta.fileSize);
 
 		for(int i = 0; i < meta.fileSize; i++) {
 			char buffer;
