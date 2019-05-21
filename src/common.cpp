@@ -141,8 +141,8 @@ int write_header_to_disk(struct Header &mainHeader,
 	return 0;
 }
 
-// TODO TODO TODO TODO TODO TODO TODO
-/* Read netadata from the archive file */
+
+/* Read metadata from the archive file */
 int read_metadata_from_disk(std::fstream &archivePtr, struct Header &mainHeader, std::vector<struct Metadata> &metaVector){
 	archivePtr.seekg(mainHeader.offsetToMeta);    // Seek to the offset of metadata Header.offsetToMeta
 	for(int i = 0; i < mainHeader.fileCount + mainHeader.directoryCount + mainHeader.symboliclinkCount + mainHeader.otherFileCount; i++) {
@@ -323,7 +323,7 @@ int append_file_to_disk(std::fstream &archivePtr,
 	if (readFile.is_open()) {
 		char buffer;
 		while (!readFile.eof()) {
-			buffer = (char) readFile.get();
+			readFile.get(buffer);
 			archivePtr.put(buffer);
 			// Update the offsetToMeta offset
 			mainHeader.offsetToMeta += sizeof(buffer);

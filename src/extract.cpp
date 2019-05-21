@@ -151,7 +151,7 @@ int extract_meta_file(std::fstream &archivePtr, struct Metadata &meta){
 
 		for(int i = 0; i < meta.fileSize; i++) {
 			char buffer;
-			buffer = (char) archivePtr.get();
+			archivePtr.get(buffer);
 			diskPtr.put(buffer);
 		}
 
