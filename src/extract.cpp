@@ -163,13 +163,15 @@ int extract_meta_file(std::fstream &archivePtr, struct Metadata &meta){
 
 /* Creates a softlink to a file*/
 int extract_meta_softlink(std::fstream &archivePtr, struct Metadata &meta){
-	char updated_pathToObject[FILENAME_MAX+1];
+	char updated_pathToObject[FILENAME_MAX+1] = "";
 	strcpy(updated_pathToObject, "test");
 	strcat(updated_pathToObject, meta.pathToObject);
 
-	char updated_pathTosymlink[FILENAME_MAX+1];
-	strcpy(updated_pathTosymlink, "test");
+	char updated_pathTosymlink[FILENAME_MAX+1]= "";
 	strcat(updated_pathTosymlink, meta.symLinkTarget);
+
+  std::cout << "DEBUG SOFT Printing updated_pathTosymlink  " << updated_pathTosymlink << std::endl;
+  std::cout << "DEBUG SOFT Printing updated_pathToObject  " <<  updated_pathToObject << std::endl;
 
 	if (DEBUG) std::cout << "Extracting file with symbolic link " << updated_pathToObject << "  version " << meta.version << '\n';
 	symlink(updated_pathTosymlink, updated_pathToObject);
@@ -179,13 +181,16 @@ int extract_meta_softlink(std::fstream &archivePtr, struct Metadata &meta){
 
 /* Creates a hardlink to a file */
 int extract_meta_hardlink(std::fstream &archivePtr, struct Metadata &meta){
-	char updated_pathToObject[FILENAME_MAX+1];
+	char updated_pathToObject[FILENAME_MAX+1]= "";
 	strcpy(updated_pathToObject, "test");
 	strcat(updated_pathToObject, meta.pathToObject);
 
-  char updated_hardLinkTarget[FILENAME_MAX+1];
+  char updated_hardLinkTarget[FILENAME_MAX+1]= "";
 	strcpy(updated_hardLinkTarget, "test");
 	strcat(updated_hardLinkTarget, meta.hardLinkTarget);
+
+  std::cout << "DEBUG HARD Printing updated_hardLinkTarget  " << updated_hardLinkTarget << std::endl;
+  std::cout << "DEBUG HARD Printing updated_pathToObject  " <<  updated_pathToObject << std::endl;
 
 	if (DEBUG) std::cout << "Extracting file with hard link " << updated_hardLinkTarget << "  version " << meta.version << '\n';
 	link(updated_hardLinkTarget, updated_pathToObject);
