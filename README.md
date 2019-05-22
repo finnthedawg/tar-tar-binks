@@ -2,7 +2,7 @@
 
 [![Codacy Badge](https://api.codacy.com/project/badge/Grade/956289d5c77c4785836cac7e895bc60a)](https://www.codacy.com/app/samhunsadamant/tar-tar-binks?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=finnthedawg/tar-tar-binks&amp;utm_campaign=Badge_Grade)
 
-A BSD-based tar utility that flattens out the file hierarchy and creates a archived package that can be inspected and unarchived for later use.
+A BSD-based tar utility that flattens out the file hierarchy and creates a archived package that can be inspected and un-archived for later use. The utility also supports versioning and history, allowing you to store multiple versions of the same file to inspect the files when needed. Specifying the `-o` flag when extracting will give you the specified version of every file. UNIX based Hard-links and soft links are also included in this utility, dynamically linking and soft-linking the desired files.
 
 ## Build
 ```shell
