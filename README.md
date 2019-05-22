@@ -2,7 +2,7 @@
 
 [![Codacy Badge](https://api.codacy.com/project/badge/Grade/956289d5c77c4785836cac7e895bc60a)](https://www.codacy.com/app/samhunsadamant/tar-tar-binks?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=finnthedawg/tar-tar-binks&amp;utm_campaign=Badge_Grade)
 
-A unix-based tar utility that flattens out the file hierarchy and creates a archived package that can be inspected and unarchived for later use.
+A BSD-based tar utility that flattens out the file hierarchy and creates a archived package that can be inspected and unarchived for later use.
 
 ## Build
 ```shell
@@ -14,7 +14,7 @@ $ make all
 $ make clean
 ```
 
-## Run instructions
+## Run instructions (Darwin Systems only for now)
 Each flag option can only be run one at a time except for when -x is used with -o.
 ```shell
 $ ./adtar {-c | -a | -x | -m | -p | -o NUMBER} <archive-file> <file/directory list>
